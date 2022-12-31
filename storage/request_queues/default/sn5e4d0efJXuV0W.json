@@ -1,0 +1,9 @@
+{
+	"id": "sn5e4d0efJXuV0W",
+	"json": "{\"id\":\"sn5e4d0efJXuV0W\",\"url\":\"http://ko.notice.wikidok.net/wp-d/57a87f460701719276fe187e/History\",\"loadedUrl\":\"http://ko.notice.wikidok.net/wp-d/57a87f460701719276fe187e/History\",\"uniqueKey\":\"http://ko.notice.wikidok.net/wp-d/57a87f460701719276fe187e/History\",\"method\":\"GET\",\"noRetry\":false,\"retryCount\":0,\"errorMessages\":[],\"headers\":{},\"userData\":{\"__crawlee\":{\"state\":4}},\"handledAt\":\"2022-12-31T14:19:13.337Z\"}",
+	"method": "GET",
+	"orderNo": null,
+	"retryCount": 0,
+	"uniqueKey": "http://ko.notice.wikidok.net/wp-d/57a87f460701719276fe187e/History",
+	"url": "http://ko.notice.wikidok.net/wp-d/57a87f460701719276fe187e/History"
+}

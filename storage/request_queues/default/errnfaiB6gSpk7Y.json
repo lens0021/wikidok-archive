@@ -1,0 +1,9 @@
+{
+	"id": "errnfaiB6gSpk7Y",
+	"json": "{\"id\":\"errnfaiB6gSpk7Y\",\"url\":\"http://ko.areumdri.wikidok.net/wp-c/%EC%83%9D%ED%99%9C/History\",\"loadedUrl\":\"http://ko.areumdri.wikidok.net/wp-c/%EC%83%9D%ED%99%9C/History\",\"uniqueKey\":\"http://ko.areumdri.wikidok.net/wp-c/%EC%83%9D%ED%99%9C/History\",\"method\":\"GET\",\"noRetry\":false,\"retryCount\":0,\"errorMessages\":[],\"headers\":{},\"userData\":{\"__crawlee\":{\"state\":4}},\"handledAt\":\"2022-12-31T14:17:27.483Z\"}",
+	"method": "GET",
+	"orderNo": null,
+	"retryCount": 0,
+	"uniqueKey": "http://ko.areumdri.wikidok.net/wp-c/%EC%83%9D%ED%99%9C/History",
+	"url": "http://ko.areumdri.wikidok.net/wp-c/%EC%83%9D%ED%99%9C/History"
+}
