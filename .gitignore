@@ -1,2 +1,9 @@
+# Node
 node_modules
+
+# TypeScript
 dist
+
+# Crawlee
+storage/key_value_stores
+storage/requests_queues
