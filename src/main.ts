@@ -1,11 +1,12 @@
-import {
-  log,
-  JSDOMCrawler,
-  CheerioCrawler,
-  PlaywrightCrawler,
-  Dataset,
-  RequestQueue,
-} from 'crawlee'
+import { log, CheerioCrawler, Dataset, RequestQueue } from 'crawlee'
+import { exit } from 'process'
+
+const TIME_IS_OVER = true
+
+if (TIME_IS_OVER) {
+  console.log('위키독 서비스가 종료되었으며 크롤링은 불가합니다.')
+  exit(1)
+}
 
 interface Data {
   url: string
@@ -53,138 +54,93 @@ async function chooseDataset(url: string) {
   return Dataset
 }
 
-const k: 'cheerio' | 'playwright' | 'jsdom' = 'cheerio'
+const crawler = new CheerioCrawler({
+  maxConcurrency: 4,
+  // maxRequestsPerMinute: 30,
+  forceResponseEncoding: 'utf-8',
 
-const crawler = {
-  cheerio: new CheerioCrawler({
-    maxConcurrency: 4,
-    // maxRequestsPerMinute: 30,
-    forceResponseEncoding: 'utf-8',
+  async requestHandler({ $, request, enqueueLinks }) {
+    const queue = await RequestQueue.open()
+    const wikiId = extractId(request.url)
+    const wikiTitle = $('#wikiTitle strong').text().trim()
 
-    async requestHandler({ $, request, enqueueLinks }) {
-      const queue = await RequestQueue.open()
-      const wikiId = extractId(request.url)
-      const wikiTitle = $('#wikiTitle strong').text().trim()
-
-      const data: Data = {
-        url: request.url,
-        loadedUrl: request.loadedUrl,
-        wikiTitle,
-        header: $('.wiki-common-header1 li')
-          .slice(1)
-          .map((_i, el) => $(el).text().trim())
-          .get(),
-      }
-
-      log.info('' + request.loadedUrl + ' ' + wikiTitle)
-
-      const keySelectorMap = {
-        postContents: '.postContents',
-        footNoteLst: '.footNote_lst',
-        tblHistory: '#tblHistory',
-      } as const
-
-      let key: keyof typeof keySelectorMap
-      for (key in keySelectorMap) {
-        const ele = $(keySelectorMap[key])
-        if (!ele) {
-          continue
-        }
-        const html = ele.html()
-        if (html !== null) {
-          data[key] = html.trim()
-        }
-      }
-      const dataset = await chooseDataset(request.url)
-
-      await dataset.pushData(data)
-
-      await enqueueLinks({
-        regexps: [
-          // Enqueue /View
-          /^https?:\/\/ko\..+\.wikidok\.net\/wp-[cd]\/.+\/View$/,
-          // Enqueue /History
-          /^https?:\/\/ko\..+\.wikidok\.net\/wp-[cd]\/.+\/History$/,
-          // Enqueue /History?page=2
-          /^https?:\/\/ko\..+\.wikidok\.net\/wp-[cd]\/.+\/History\?page=\d+$/,
-          // Enqueue @14/View
-          /^https?:\/\/ko\..+\.wikidok\.net\/wp-[cd]\/.+@\d+\/View$/,
-        ],
-      })
-
-      const isFirstHistoryPage = /\/History/.test(request.url)
-      if (isFirstHistoryPage) {
-        const anchors = $('ul.wiki-pagination a')
-
-        for (const a of anchors) {
-          // WindowLocation('/wp-d/5793c26ce70c5cb308fc0a76/History?page=3');
-          const onclick = $(a).attr('onclick')
-          if (!onclick) continue
-          const m = onclick.match(
-            /WindowLocation\('(\/wp-d\/.+\/History\?page=\d+)'\);/
-          )
-          if (!m || !m[1]) continue
-
-          const url = `http://ko.${wikiId}.wikidok.net${m[1]}`
-
-          await queue.addRequest({ url })
-        }
-      }
-
-      const oldid = extractOldid(request.url)
-      if (oldid !== null) {
-        for (const olderId of [...Array(oldid).keys()].slice(1)) {
-          const url = request.url.replace(/@\d+\//, `@${olderId}/`)
-          await queue.addRequest({ url })
-        }
-      }
-    },
-  }),
-  playwright: new PlaywrightCrawler({
-    async requestHandler({ request, page, log }) {
-      const title = await page.title()
-      log.info(`Title of ${request.loadedUrl} is '${title}'`)
-
-      await Dataset.pushData({
-        url: request.url,
-        loadedUrl: request.loadedUrl,
-        title,
-      })
-    },
-  }),
-  jsdom: new JSDOMCrawler({
-    // runScripts: true,
-    forceResponseEncoding: 'utf-8',
-    async requestHandler({ request, window }) {
-      const { document } = window
-      const title = document.title
-      log.info(`Title of ${request.url} is '${title}', `)
-
-      const data: Data = {
-        title,
-        url: request.url,
-        loadedUrl: request.loadedUrl,
-      }
-      const header = Array.from(
-        window.document.querySelectorAll('.wiki-common-header1 li')
-      )
+    const data: Data = {
+      url: request.url,
+      wikiTitle,
+      header: $('.wiki-common-header1 li')
         .slice(1)
-        .map((e) => {
-          return e.textContent
-        })
-        .filter((s) => s !== null)
-      if (header) {
-        data['header'] = header
-      }
-      const wikiTitle = window.document.querySelector('#wikiTitle strong')
-      if (wikiTitle?.textContent) {
-        data['wikiTitle'] = wikiTitle.textContent.trim()
-      }
+        .map((_i, el) => $(el).text().trim())
+        .get(),
+    }
 
-      await Dataset.pushData(data)
-    },
-  }),
-}[k]
+    if (request.loadedUrl !== undefined) {
+      data['loadedUrl'] = request.loadedUrl
+    }
+
+    log.info('' + request.loadedUrl + ' ' + wikiTitle)
+
+    const keySelectorMap = {
+      postContents: '.postContents',
+      footNoteLst: '.footNote_lst',
+      tblHistory: '#tblHistory',
+    } as const
+
+    let key: keyof typeof keySelectorMap
+    for (key in keySelectorMap) {
+      const ele = $(keySelectorMap[key])
+      if (!ele) {
+        continue
+      }
+      const html = ele.html()
+      if (html !== null) {
+        data[key] = html.trim()
+      }
+    }
+    const dataset = await chooseDataset(request.url)
+
+    await dataset.pushData(data)
+
+    await enqueueLinks({
+      regexps: [
+        // Enqueue /View
+        /^https?:\/\/ko\..+\.wikidok\.net\/wp-[cd]\/.+\/View$/,
+        // Enqueue /History
+        /^https?:\/\/ko\..+\.wikidok\.net\/wp-[cd]\/.+\/History$/,
+        // Enqueue /History?page=2
+        /^https?:\/\/ko\..+\.wikidok\.net\/wp-[cd]\/.+\/History\?page=\d+$/,
+        // Enqueue @14/View
+        /^https?:\/\/ko\..+\.wikidok\.net\/wp-[cd]\/.+@\d+\/View$/,
+      ],
+    })
+
+    const isFirstHistoryPage = /\/History/.test(request.url)
+    if (isFirstHistoryPage) {
+      const anchors = $('ul.wiki-pagination a')
+
+      for (const a of anchors) {
+        // WindowLocation('/wp-d/5793c26ce70c5cb308fc0a76/History?page=3');
+        const onclick = $(a).attr('onclick')
+        if (!onclick) continue
+        const m = onclick.match(
+          /WindowLocation\('(\/wp-d\/.+\/History\?page=\d+)'\);/,
+        )
+        if (!m || !m[1]) continue
+
+        const url = `http://ko.${wikiId}.wikidok.net${m[1]}`
+
+        await queue.addRequest({ url })
+      }
+    }
+
+    const oldid = extractOldid(request.url)
+    if (oldid !== null) {
+      for (const olderId of [...Array(oldid).keys()].slice(1)) {
+        const url = request.url.replace(/@\d+\//, `@${olderId}/`)
+        await queue.addRequest({ url })
+      }
+    }
+  },
+})
 
 function concatHistory(urls: string[]): string[] {
   const historyUrls = [...urls].map((el) => `${el}/History`)
@@ -3206,9 +3162,11 @@ let urls = [
   'http://ko.veganism.wikidok.net/wp-d/630346980c2d47dd5cff1d84',
 ]
 
-// await crawler.run(concatHistory(urls))
+await crawler.run(concatHistory(urls))
+
 await crawler.run(
-`http://ko.areumdri.wikidok.net/wp-d/5793c26ce70c5cb308fc0a76@1/View
+  `
+http://ko.areumdri.wikidok.net/wp-d/5793c26ce70c5cb308fc0a76@1/View
 http://ko.areumdri.wikidok.net/wp-d/5793c26ce70c5cb308fc0a76@2/View
 http://ko.areumdri.wikidok.net/wp-d/5793c26ce70c5cb308fc0a76@3/View
 http://ko.areumdri.wikidok.net/wp-d/5793c26ce70c5cb308fc0a76@4/View
@@ -5032,6 +4990,9 @@ http://ko.areumdri.wikidok.net/wp-d/5b04c7b0fad4980260a95835@176/View
 http://ko.areumdri.wikidok.net/wp-d/5b04c7b0fad4980260a95835@177/View
 http://ko.areumdri.wikidok.net/wp-d/5b04c7b0fad4980260a95835@178/View
 http://ko.areumdri.wikidok.net/wp-d/5b04c7b0fad4980260a95835@179/View
-`.trim().split('\n'))
+`
+    .trim()
+    .split('\n'),
+)
 
 log.debug('Crawler finished.')
