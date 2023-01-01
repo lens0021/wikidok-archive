@@ -6,23 +6,38 @@
     "ts-node": "ts-node-esm -T",
     "crawl:prod": "node dist/main.js",
     "crawl:dev": "yarn ts-node src/main.ts",
-    "generate-xml": "yarn ts-node src/generate-xml.ts"
+    "generate-mw-dump": "yarn ts-node src/generate-mw-dump.ts",
+    "test": "jest"
   },
   "main": "dist/main.ts",
   "type": "module",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^4.0.0",
+    "args": "^5.0.3",
     "crawlee": "^3.1.4",
-    "playwright": "^1.29.1",
-    "prettier": "^2.8.1",
     "xmlbuilder": "^15.1.1"
   },
   "devDependencies": {
     "@apify/tsconfig": "^0.1.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.0.0",
+    "@types/args": "^5.0.0",
+    "@types/jest": "^29.2.5",
     "@types/node": "^18.11.18",
+    "jest": "^29.3.1",
+    "prettier": "^2.8.1",
+    "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.4"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "**/*.ts"
+    ],
+    "testMatch": [
+      "**/*.spec.ts"
+    ]
   },
   "prettier": {
     "semi": false,
