@@ -2,11 +2,11 @@
   "name": "wikidok-archive",
   "version": "1.0.0",
   "scripts": {
-    "start:prod": "node dist/main.js",
-    "start:dev": "yarn ts-node src/main.ts",
-    "generate-xml": "yarn ts-node src/generate-xml.ts",
+    "build": "tsc",
     "ts-node": "ts-node-esm -T",
-    "build": "tsc"
+    "crawl:prod": "node dist/main.js",
+    "crawl:dev": "yarn ts-node src/main.ts",
+    "generate-xml": "yarn ts-node src/generate-xml.ts"
   },
   "main": "dist/main.ts",
   "type": "module",
