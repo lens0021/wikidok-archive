@@ -7,3 +7,6 @@ dist
 # Crawlee
 storage/key_value_stores
 storage/requests_queues
+
+# Mac
+.DS_store
