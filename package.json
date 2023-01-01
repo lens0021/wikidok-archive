@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "start:prod": "node dist/main.js",
-    "start:dev": "ts-node-esm -T src/main.ts",
+    "start:dev": "yarn ts-node src/main.ts",
+    "generate-xml": "yarn ts-node src/generate-xml.ts",
+    "ts-node": "ts-node-esm -T",
     "build": "tsc"
   },
   "main": "dist/main.ts",
@@ -12,7 +14,8 @@
   "dependencies": {
     "crawlee": "^3.1.4",
     "playwright": "^1.29.1",
-    "prettier": "^2.8.1"
+    "prettier": "^2.8.1",
+    "xmlbuilder": "^15.1.1"
   },
   "devDependencies": {
     "@apify/tsconfig": "^0.1.0",
@@ -22,6 +25,7 @@
   },
   "prettier": {
     "semi": false,
-    "singleQuote": true
+    "singleQuote": true,
+    "trailingComma": "all"
   }
 }
