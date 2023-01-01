@@ -37,7 +37,7 @@ function extractOldid(url: string) {
   // http://ko.areumdri.wikidok.net/wp-d/5793c26ce70c5cb308fc0a76@14/View
   const m = url.match(/ko\.[^\.]+\.wikidok\.net\/wp-[cd]\/.+@(\d+)\/View$/)
 
-  if (m && m.length > 0) {
+  if (m && m[1]) {
     return parseInt(m[1])
   }
   return null
