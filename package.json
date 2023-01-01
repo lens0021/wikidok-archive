@@ -12,6 +12,7 @@
   "type": "module",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "crawlee": "^3.1.4",
     "playwright": "^1.29.1",
     "prettier": "^2.8.1",
