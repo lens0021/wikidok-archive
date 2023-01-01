@@ -1,28 +1,12 @@
 import { log, CheerioCrawler, Dataset, RequestQueue } from 'crawlee'
 import { exit } from 'process'
+import { WikidokDump as Data } from './types/wikidok-dump'
 
 const TIME_IS_OVER = true
 
 if (TIME_IS_OVER) {
   console.log('위키독 서비스가 종료되었으며 크롤링은 불가합니다.')
   exit(1)
-}
-
-interface Data {
-  url: string
-  loadedUrl?: string
-  title?: string
-
-  wikiTitle?: string
-
-  header?: (string | null)[]
-
-  // View page
-  postContents?: string
-  footNoteLst?: string
-
-  // History page
-  tblHistory?: string
 }
 
 function extractId(url: string) {
