@@ -1,4 +1,4 @@
-export interface WikidokDump {
+export interface CrawledObject {
   filename?: string
 
   url: string

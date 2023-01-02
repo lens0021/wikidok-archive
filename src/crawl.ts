@@ -1,6 +1,6 @@
 import { log, CheerioCrawler, Dataset, RequestQueue } from 'crawlee'
 import { exit } from 'process'
-import { WikidokDump as Data } from './types/wikidok-dump'
+import { CrawledObject as Data } from './types/crawled-object'
 
 const TIME_IS_OVER = true
 

@@ -1,13 +1,13 @@
-import { SiteInfo } from './site-info'
+import { MwSiteInfo } from './mw-site-info'
 
-export type Wiki =
+export type WdSite =
   | 'areumdri'
   | 'veganism'
   | 'notice'
   | 'overwatch'
   | 'womwiki0308'
 
-export function siteInfoFor(wiki: Wiki): SiteInfo {
+export function siteInfoFor(wiki: WdSite): MwSiteInfo {
   const base = `http://ko.${wiki}.wikidok.net/Wiki`
   return {
     areumdri: {

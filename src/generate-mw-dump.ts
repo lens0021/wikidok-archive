@@ -1,174 +1,210 @@
-import { extractRevTimestampMap } from './parsers/history-page-parser.js'
-import { SiteInfo } from './types/site-info.js'
-import { WikidokDump } from './types/wikidok-dump.js'
-import { siteInfoFor, Wiki } from './types/wikidok-wiki.js'
+import { extractRevDataMap } from './parsers/history-page-parser.js'
+import { fillMissingValuesInTitles } from './revision-sanitizer.js'
+import { groupTitle } from './title-map-grouper.js'
+import { CrawledObject } from './types/crawled-object.js'
+import { MwRevision } from './types/mw-revision.js'
+import { MwSiteInfo } from './types/mw-site-info.js'
+import { MwTitleMap } from './types/mw-title.js'
+import { siteInfoFor as siteInfoOf, WdSite } from './types/wd-site.js'
 import * as WikidokUrlParser from './wikidok-url-parser.js'
-import { default as args } from 'args'
+import { default as Args } from 'args'
 import { readdirSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
 import xmlbuilder from 'xmlbuilder'
 
-interface Revision {
-  wikiTitle: string
-  text?: string
-  timestamp?: string
-  contributor?: string
-}
+await main()
 
-interface Title {
-  originalRevisionCount: number
-  revisions: { [key: string]: Revision }
-  latestRevision?: Revision
-}
+async function main() {
+  Args.option('wiki', 'The wiki to process', 'veganism')
+  const args = Args.parse(process.argv)
 
-args.option('wiki', 'The wiki to process', 'veganism')
-
-await main(args.parse(process.argv)['wiki'] as Wiki)
-
-async function main(wiki: Wiki) {
+  const wiki = args['wiki'] as WdSite
   console.log('Generate MediaWiki dump for ' + wiki)
-  const wikidokDump = await readDumps(wiki)
-  const WINDOW = 100
-  for (let step = 0; (step + 1) * WINDOW < wikidokDump.length; step++) {
-    const slicedDump = wikidokDump.slice(step * WINDOW, (step + 1) * WINDOW)
-    const titleDump = createTitleDump(slicedDump)
-    // TODO: step title instead of dump
-    const mwDumpObj = preprocessDumps(titleDump, siteInfoFor(wiki))
+
+  const wikidokDump = await readCrawled(wiki)
+
+  const titleDump = createTitleDump(wikidokDump)
+
+  const titleGroups = groupTitle(titleDump, 3000)
+  for (const i of titleGroups.keys()) {
+    const group = titleGroups[i] as MwTitleMap
+    const mwDumpObj = generateMwDump(group, siteInfoOf(wiki))
     const xml = xmlbuilder.create(mwDumpObj).end({ pretty: true })
-    await saveToFile(xml, wiki, step)
+    await saveToFile(xml, wiki, i)
   }
 }
 
-async function readDumps(wiki: string | null = null): Promise<WikidokDump[]> {
+async function readCrawled(
+  wiki: string | null = null,
+): Promise<CrawledObject[]> {
+  // TODO: Use relative path
   const paths = await readdirSync(`storage/datasets/${wiki}`)
-  const jsonData = []
+  const crawledObjs = []
   for (const path of paths) {
+    // TODO: Use relative path
     const file = await readFile(`storage/datasets/${wiki}/${path}`, 'utf8')
-    const json = JSON.parse(file) as WikidokDump
-    json.filename = path
-    jsonData.push(json)
+    const crawledObj = JSON.parse(file) as CrawledObject
+    crawledObj.filename = path
+    crawledObjs.push(crawledObj)
   }
-  return jsonData
+  return crawledObjs
 }
 
-function createTitleDump(wikidokDump: WikidokDump[]): { [key: string]: Title } {
-  const titles: { [key: string]: Title } = {}
-  for (const json of wikidokDump) {
-    if (!json.wikiTitle) {
-      console.warn('There is no wikiTitle: ' + json.wikiTitle)
+function createTitleDump(crawledObjs: CrawledObject[]): MwTitleMap {
+  let titles: MwTitleMap = {}
+  for (const crawled of crawledObjs) {
+    if (!crawled.wikiTitle) {
+      console.warn('There is no wikiTitle: ' + crawled.wikiTitle)
       continue
     }
-    const id = WikidokUrlParser.id(json.url)
+    const id = WikidokUrlParser.id(crawled.url)
     if (id === null) {
-      console.warn('Failed to extract id from url:' + json.url)
+      console.warn('Failed to extract id from url:' + crawled.url)
       continue
     }
-    const isHistory = WikidokUrlParser.isHistoryPage(json.url)
-    if (isHistory && json.tblHistory) {
-      const revTimeMap = extractRevTimestampMap(json.tblHistory)
-      for (const strRevId in revTimeMap) {
-        const revId = parseInt(strRevId)
-
-        if (titles[id] === undefined) {
-          titles[id] = {
-            originalRevisionCount: 0,
-            revisions: {},
-          }
-        }
-        const originRevCnt = (titles[id] as Title).originalRevisionCount
-        if (originRevCnt !== undefined && originRevCnt < revId) {
-          ;(titles[id] as Title).originalRevisionCount = revId
-        }
-        if (revTimeMap[revId]) {
-          const timestamp = revTimeMap[revId] as string
-          if ((titles[id] as Title).revisions[revId]) {
-            ;((titles[id] as Title).revisions[revId] as Revision).timestamp =
-              timestamp
-          }
-        }
-      }
+    const isHistory = WikidokUrlParser.isHistoryPage(crawled.url)
+    if (isHistory) {
+      titles = applyCrawledHistory(crawled, id, titles)
       continue
     }
-    const revId = WikidokUrlParser.revisionId(json.url)
-
-    const rev: Revision = {
-      wikiTitle: json.wikiTitle,
-    }
-    if (json.postContents) {
-      rev.text = json.postContents
-    }
-
-    const titleIsShipped = titles[id] !== undefined
-    if (titleIsShipped) {
-      if (revId !== null) {
-        const revisionIsShipped =
-          revId !== null && (titles[id] as Title).revisions[revId] !== undefined
-        if (revisionIsShipped) {
-          console.log(`Duplicated: ${id}@${revId}`)
-          continue
-        } else {
-          ;(titles[id] as Title).revisions[revId.toString()] = rev
-          if ((titles[id] as Title).originalRevisionCount < revId) {
-            ;(titles[id] as Title).originalRevisionCount = revId
-          }
-        }
-      }
-      // TODO: Add revision if not yet exist
-    } else {
-      titles[id] = {
-        originalRevisionCount: 1,
-        revisions: {},
-      }
-      if (revId !== null) {
-        if (titles[id] !== undefined) {
-          ;(titles[id] as Title).revisions[revId.toString()] = rev
-        }
-      } else {
-        ;(titles[id] as Title).latestRevision = rev
-      }
+    const revId = WikidokUrlParser.revisionId(crawled.url),
+      isRevision = revId !== null
+    if (isRevision) {
+      titles = applyCrawledRevision(crawled, id, revId, titles)
     }
   }
   return titles
 }
 
-function preprocessDumps(
-  titleMap: { [key: string]: Title },
-  siteInfo: SiteInfo,
+function applyCrawledHistory(
+  crawled: CrawledObject,
+  id: string,
+  titles: MwTitleMap,
 ) {
+  if (crawled.tblHistory === undefined || id === null) {
+    return titles
+  }
+
+  const revDataMap = extractRevDataMap(crawled.tblHistory)
+  for (const strRevId in revDataMap) {
+    const revId = parseInt(strRevId)
+
+    if (titles[id] === undefined) {
+      titles[id] = {
+        originalRevisionCount: 0,
+        revisions: {},
+      }
+    }
+    const originRevCnt = titles[id]!.originalRevisionCount
+    if (originRevCnt !== undefined && originRevCnt < revId) {
+      titles[id]!.originalRevisionCount = revId
+    }
+    if (revDataMap[revId]) {
+      const timestamp = revDataMap[revId]?.timestamp
+      if (timestamp && titles[id]!.revisions[revId]) {
+        titles[id]!.revisions[revId]!.timestamp = timestamp
+      }
+
+      const contributor = revDataMap[revId]?.contributor
+      if (contributor && titles[id]!.revisions[revId]) {
+        titles[id]!.revisions[revId]!.contributor = contributor
+      }
+
+      const comment = revDataMap[revId]?.comment
+      if (comment && titles[id]!.revisions[revId]) {
+        titles[id]!.revisions[revId]!.comment = comment
+      }
+    }
+  }
+
+  return titles
+}
+
+function applyCrawledRevision(
+  crawled: CrawledObject,
+  id: string,
+  revId: number,
+  titles: MwTitleMap,
+) {
+  const rev: MwRevision = {
+    wikiTitle: crawled.wikiTitle!,
+  }
+  if (crawled.postContents) {
+    rev.text = crawled.postContents
+  }
+
+  const titleIsShipped = titles[id] !== undefined
+  if (titleIsShipped) {
+    const revisionIsShipped = titles[id]!.revisions[revId] !== undefined
+    if (revisionIsShipped) {
+      console.log(`Duplicated: ${id}@${revId}`)
+      return titles
+    }
+    titles[id]!.revisions[revId.toString()] = rev
+    if (titles[id]!.originalRevisionCount < revId) {
+      titles[id]!.originalRevisionCount = revId
+    }
+  } else {
+    titles[id] = {
+      originalRevisionCount: 1,
+      revisions: {},
+    }
+    if (revId !== null) {
+      if (titles[id] !== undefined) {
+        titles[id]!.revisions[revId.toString()] = rev
+      }
+    } else {
+      titles[id]!.latestRevision = rev
+    }
+  }
+
+  return titles
+}
+
+function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
   const duplications = checkDuplications(titleMap)
-  if (duplications) {
-    console.log('Duplicated Titles are ignored')
+  if (duplications.length > 0) {
+    console.log('Duplicated Titles are ignored:')
     console.log(duplications)
   }
   const page = []
+  titleMap = fillMissingValuesInTitles(titleMap, siteInfo)
   for (const title in titleMap) {
-    if (titleMap[title] === undefined) {
-      continue
-    }
-    const titleObj = titleMap[title] as Title
-
     const revisions = []
     if (
-      titleMap[title] &&
-      titleMap[title]?.latestRevision &&
-      titleMap[title]?.originalRevisionCount
+      titleMap[title]!.latestRevision &&
+      titleMap[title]!.originalRevisionCount
     ) {
-      const latest = titleMap[title]?.latestRevision as Revision
-      const originRevCnt = titleMap[title]?.originalRevisionCount
+      const latest = titleMap[title]!.latestRevision!
+      const originRevCnt = titleMap[title]!.originalRevisionCount!
       if (originRevCnt) {
-        titleObj.revisions[originRevCnt] = latest
+        titleMap[title]!.revisions[originRevCnt] = latest
       }
     }
-    for (const rev in titleObj.revisions) {
+    for (const rev in titleMap[title]!.revisions) {
+      if (titleMap[title]!.revisions[rev]!.timestamp === undefined) {
+        throw Error(
+          'timestamp is null for ' + titleMap[title]!.latestRevision?.wikiTitle,
+        )
+      }
+      if (titleMap[title]!.revisions[rev]!.contributor === undefined) {
+        throw Error(
+          'contributor is null for ' +
+            titleMap[title]!.latestRevision?.wikiTitle,
+        )
+      }
       revisions.push({
         timestamp: {
-          // TODO Use closest timestamp if not given
-          '#text': titleMap[title]?.revisions[rev]?.timestamp,
+          '#text': titleMap[title]!.revisions[rev]?.timestamp!,
         },
         contributor: {
           username: {
-            '#text': titleMap[title]?.revisions[rev]?.contributor,
+            '#text': titleMap[title]!.revisions[rev]?.contributor,
           },
+        },
+        comment: {
+          // TODO: Set prefer comment
+          '#text': titleMap[title]!.revisions[rev]?.comment,
         },
         model: {
           '#text': 'wikitext',
@@ -179,13 +215,15 @@ function preprocessDumps(
         text: {
           '@xml:space': 'preserve',
           // TODO: Parse <a> tags
-          '#text': titleMap[title]?.revisions[rev]?.text,
+          // TODO: Replace <img> tags
+          '#text': titleMap[title]!.revisions[rev]?.text,
         },
       })
     }
     page.push([
       {
-        title: titleMap[title]?.latestRevision?.wikiTitle,
+        // \[\] 같은 특수문자 처리, 하위문서 처리
+        title: titleMap[title]!.latestRevision?.wikiTitle,
         revision: revisions,
       },
     ])
@@ -220,12 +258,12 @@ function preprocessDumps(
   return xmlObjDump
 }
 
-async function saveToFile(xml: string, wiki: Wiki, step: number) {
+async function saveToFile(xml: string, wiki: WdSite, step: number) {
   const file = `./mw-dump/${wiki}-${step}.xml`
   await writeFile(file, xml)
 }
 
-function checkDuplications(_dumps: { [key: string]: Title }): string[] {
+function checkDuplications(_dumps: MwTitleMap): string[] {
   // TODO
   return []
 }
