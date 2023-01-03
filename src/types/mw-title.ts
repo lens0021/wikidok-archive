@@ -1,4 +1,4 @@
-import { MwRevision, MwRevisionMap } from './mw-revision.js'
+import { MwRevision, MwRevisionMap } from './mw-revision'
 
 
 /**

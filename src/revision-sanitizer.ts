@@ -1,7 +1,7 @@
 import { omitUnderSecond, oneSecondAgo } from './date-converter'
-import { MwRevisionMap } from './types/mw-revision.js'
-import { MwSiteInfo } from './types/mw-site-info.js'
-import { MwTitleMap } from './types/mw-title.js'
+import { MwRevisionMap } from './types/mw-revision'
+import { MwSiteInfo } from './types/mw-site-info'
+import { MwTitleMap } from './types/mw-title'
 
 export function fillMissingValuesInTitles(
   titleMap: MwTitleMap,
