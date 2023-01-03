@@ -44,11 +44,31 @@ test('fillMissingValuesInTitleMap', () => {
     titleText: {
       originalRevisionCount: 5,
       revisions: {
-        '5': { wikiTitle: titleText, timestamp: '2009-05-28T07:47:01Z' },
-        '4': { wikiTitle: titleText, timestamp: '2009-05-28T07:47:00Z' },
-        '3': { wikiTitle: titleText, timestamp: '2009-05-28T07:46:59Z' },
-        '2': { wikiTitle: titleText, timestamp: '2009-05-28T07:46:58Z' },
-        '1': { wikiTitle: titleText, timestamp: '2009-05-28T07:46:57Z' },
+        '5': {
+          wikiTitle: titleText,
+          contributor: 'Dummy Wiki의 기여자',
+          timestamp: '2009-05-28T07:47:01Z',
+        },
+        '4': {
+          wikiTitle: titleText,
+          contributor: 'Dummy Wiki의 기여자',
+          timestamp: '2009-05-28T07:47:00Z',
+        },
+        '3': {
+          wikiTitle: titleText,
+          contributor: 'Dummy Wiki의 기여자',
+          timestamp: '2009-05-28T07:46:59Z',
+        },
+        '2': {
+          wikiTitle: titleText,
+          contributor: 'Dummy Wiki의 기여자',
+          timestamp: '2009-05-28T07:46:58Z',
+        },
+        '1': {
+          wikiTitle: titleText,
+          contributor: 'Dummy Wiki의 기여자',
+          timestamp: '2009-05-28T07:46:57Z',
+        },
       },
     },
   })
@@ -68,11 +88,31 @@ test('fillMissingValuesInRevisions', () => {
       dummySiteInfo,
     ),
   ).toStrictEqual({
-    '5': { wikiTitle: titleText, timestamp: '2009-05-28T07:47:01Z' },
-    '4': { wikiTitle: titleText, timestamp: '2009-05-28T07:47:00Z' },
-    '3': { wikiTitle: titleText, timestamp: '2009-05-28T07:46:59Z' },
-    '2': { wikiTitle: titleText, timestamp: '2009-05-28T07:46:58Z' },
-    '1': { wikiTitle: titleText, timestamp: '2009-05-28T07:46:57Z' },
+    '5': {
+      wikiTitle: titleText,
+      contributor: 'Dummy Wiki의 기여자',
+      timestamp: '2009-05-28T07:47:01Z',
+    },
+    '4': {
+      wikiTitle: titleText,
+      contributor: 'Dummy Wiki의 기여자',
+      timestamp: '2009-05-28T07:47:00Z',
+    },
+    '3': {
+      wikiTitle: titleText,
+      contributor: 'Dummy Wiki의 기여자',
+      timestamp: '2009-05-28T07:46:59Z',
+    },
+    '2': {
+      wikiTitle: titleText,
+      contributor: 'Dummy Wiki의 기여자',
+      timestamp: '2009-05-28T07:46:58Z',
+    },
+    '1': {
+      wikiTitle: titleText,
+      contributor: 'Dummy Wiki의 기여자',
+      timestamp: '2009-05-28T07:46:57Z',
+    },
   })
 })
 
@@ -90,4 +130,32 @@ test('fillMissingValuesInRevisions', () => {
     expect(revs[k]).toBeDefined()
     expect(revs[k]!.timestamp).toBeDefined()
   }
+})
+
+test('fillMissingRevisions', () => {
+  const titleText = 'dummy'
+  const revs = Module.fillMissingRevisions(
+    {
+      '3': { wikiTitle: titleText, timestamp: '2009-05-28T07:46:58Z' },
+    },
+    dummySiteInfo,
+  )
+  expect(revs).toStrictEqual({
+    '3': {
+      wikiTitle: titleText,
+      timestamp: '2009-05-28T07:46:58Z',
+    },
+    '2': {
+      wikiTitle: titleText,
+      timestamp: '2009-05-28T07:46:57Z',
+      contributor: 'Dummy Wiki의 기여자',
+      text: '(데이터 없음)',
+    },
+    '1': {
+      wikiTitle: titleText,
+      timestamp: '2009-05-28T07:46:56Z',
+      contributor: 'Dummy Wiki의 기여자',
+      text: '(데이터 없음)',
+    },
+  })
 })

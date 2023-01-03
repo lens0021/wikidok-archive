@@ -45,20 +45,31 @@ describe('rows', () => {
     {
       msg: '@5',
       raw:
-        `<tr>\r\n\t\t\t\t\t\t\t\t\t<td class=\"td-m\">\r\n\t\t\t\t\t\t\t\t\t\t<div class=\"btn-group btn-group-xs margin-0\">\r\n\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" rev=\"5\" save=\"DLeft\" class=\"margin-0 btn wiki-btn-lversion chkDiffLeft\">L</button>\r\n\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" rev=\"5\" save=\"DRight\" class=\"margin-0 btn wiki-btn-rversion chkDiffRight\">R</button>\r\n\t\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t\t\t\t` +
-        `<td class=\"td-m\"><a href=\"/wp-d/595c707db8bc3d817f0bc04f@5/View\" class=\"pjax-link\">5 &#xd310;</a></td>\r\n\t\t\t\t\t\t\t\t\t<td class=\"td-m\"><a href=\"/wp-d/595c707db8bc3d817f0bc04f@5/View\" class=\"pjax-link\">2018.03.30 23:07</a></td>\r\n\t\t\t\t\t\t\t\t\t<td class=\"td-m\"><a href=\"/wt/EditList/asdf\" class=\"pjax-link\">asdf</a></td>\r\n\t\t\t\t\t\t\t\t\t<td class=\"td-m\">1832 (512)</td>\r\n\t\t\t\t\t\t\t\t\t` +
-        `<td class=\"td-m text-left\">&#xb85c;&#xace0; &#xc774;&#xbbf8;&#xc9c0; &#xc5c5;&#xb370;&#xc774;&#xd2b8;, &#xd300;&#xc6d0; &#xd56d;&#xbaa9; &#xcd94;&#xac00; &#xc11c;&#xc220;</td>\r\n\t\t\t\t\t\t\t\t</tr>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t\t\t\t` +
-        `<td class=\"td-m\">\r\n\t\t\t\t\t\t\t\t\t\t<div class=\"btn-group btn-group-xs margin-0\">\r\n\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" rev=\"4\" save=\"DLeft\" class=\"margin-0 btn wiki-btn-lversion chkDiffLeft\">L</button>\r\n\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" rev=\"4\" save=\"DRight\" class=\"margin-0 btn wiki-btn-rversion chkDiffRight\">R</button>\r\n\t\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t\t\t\t<td class=\"td-m\"><a href=\"/wp-d/595c707db8bc3d817f0bc04f@4/View\" class=\"pjax-link\">4 &#xd310;</a></td>\r\n\t\t\t\t\t\t\t\t\t` +
+        `<tr>\r\n\t\t\t\t\t\t\t\t\t` +
+        `<td class=\"td-m\">\r\n\t\t\t\t\t\t\t\t\t\t<div class=\"btn-group btn-group-xs margin-0\">\r\n\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" rev=\"5\" save=\"DLeft\" class=\"margin-0 btn wiki-btn-lversion chkDiffLeft\">L</button>\r\n\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" rev=\"5\" save=\"DRight\" class=\"margin-0 btn wiki-btn-rversion chkDiffRight\">R</button>\r\n\t\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t\t\t\t` +
+        `<td class=\"td-m\"><a href=\"/wp-d/595c707db8bc3d817f0bc04f@5/View\" class=\"pjax-link\">5 &#xd310;</a></td>\r\n\t\t\t\t\t\t\t\t\t` +
+        `<td class=\"td-m\"><a href=\"/wp-d/595c707db8bc3d817f0bc04f@5/View\" class=\"pjax-link\">2018.03.30 23:07</a></td>\r\n\t\t\t\t\t\t\t\t\t` +
+        `<td class=\"td-m\"><a href=\"/wt/EditList/asdf\" class=\"pjax-link\">asdf</a></td>\r\n\t\t\t\t\t\t\t\t\t` +
+        `<td class=\"td-m\">1832 (512)</td>\r\n\t\t\t\t\t\t\t\t\t` +
+        `<td class=\"td-m text-left\">&#xb85c;&#xace0; &#xc774;&#xbbf8;&#xc9c0; &#xc5c5;&#xb370;&#xc774;&#xd2b8;, &#xd300;&#xc6d0; &#xd56d;&#xbaa9; &#xcd94;&#xac00; &#xc11c;&#xc220;</td>\r\n\t\t\t\t\t\t\t\t</tr>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t` +
+        `<tr>\r\n\t\t\t\t\t\t\t\t\t` +
+        `<td class=\"td-m\">\r\n\t\t\t\t\t\t\t\t\t\t<div class=\"btn-group btn-group-xs margin-0\">\r\n\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" rev=\"4\" save=\"DLeft\" class=\"margin-0 btn wiki-btn-lversion chkDiffLeft\">L</button>\r\n\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" rev=\"4\" save=\"DRight\" class=\"margin-0 btn wiki-btn-rversion chkDiffRight\">R</button>\r\n\t\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t\t\t\t` +
+        `<td class=\"td-m\"><a href=\"/wp-d/595c707db8bc3d817f0bc04f@4/View\" class=\"pjax-link\">4 &#xd310;</a></td>\r\n\t\t\t\t\t\t\t\t\t` +
         `<td class=\"td-m\"><a href=\"/wp-d/595c707db8bc3d817f0bc04f@4/View\" class=\"pjax-link\">2017.12.11 15:39</a></td>\r\n\t\t\t\t\t\t\t\t\t` +
         `<td class=\"td-m\"><a href=\"/wt/EditList/asdf\" class=\"pjax-link\">asdf</a></td>\r\n\t\t\t\t\t\t\t\t\t` +
         `<td class=\"td-m\">1320 (97)</td>\r\n\t\t\t\t\t\t\t\t\t` +
         `<td class=\"td-m text-left\"></td>\r\n\t\t\t\t\t\t\t\t` +
         `</tr>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t`,
       expected: {
+        '4': {
+          timestamp: '2017-12-11T06:39:00Z',
+          contributor: 'asdf',
+          comment: '(데이터 없음)',
+        },
         '5': {
           timestamp: '2018-03-30T14:07:00Z',
           contributor: 'asdf',
-          comment: '(데이터 없음)',
+          comment: '로고 이미지 업데이트, 팀원 항목 추가 서술',
         },
       },
     },

@@ -24,9 +24,7 @@ async function main() {
   console.log('Generate MediaWiki dump for ' + wiki)
 
   const wikidokDump = await readCrawled(wiki)
-
   const titleDump = createTitleDump(wikidokDump)
-
   const titleGroups = groupTitle(titleDump, 3000)
   for (const i of titleGroups.keys()) {
     const group = titleGroups[i] as MwTitleMap
@@ -34,6 +32,7 @@ async function main() {
     const xml = xmlbuilder.create(mwDumpObj).end({ pretty: true })
     await saveToFile(xml, wiki, i)
   }
+  console.log('Done')
 }
 
 async function readCrawled(
@@ -173,16 +172,6 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
   titleMap = fillMissingValuesInTitles(titleMap, siteInfo)
   for (const title in titleMap) {
     const revisions = []
-    if (
-      titleMap[title]!.latestRevision &&
-      titleMap[title]!.originalRevisionCount
-    ) {
-      const latest = titleMap[title]!.latestRevision!
-      const originRevCnt = titleMap[title]!.originalRevisionCount!
-      if (originRevCnt) {
-        titleMap[title]!.revisions[originRevCnt] = latest
-      }
-    }
     for (const rev in titleMap[title]!.revisions) {
       if (titleMap[title]!.revisions[rev]!.timestamp === undefined) {
         throw Error('timestamp is null for ' + title)
@@ -203,7 +192,6 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
           },
         },
         comment: {
-          // TODO: Set prefer comment
           '#text': titleMap[title]!.revisions[rev]?.comment,
         },
         model: {
@@ -216,14 +204,18 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
           '@xml:space': 'preserve',
           // TODO: Parse <a> tags
           // TODO: Replace <img> tags
+          // TODO: Replace <tbody> tags
           '#text': titleMap[title]!.revisions[rev]?.text,
         },
       })
     }
     page.push([
       {
-        // \[\] 같은 특수문자 처리, 하위문서 처리
-        title: titleMap[title]!.latestRevision?.wikiTitle,
+        // TODO: \[\] 같은 특수문자 처리
+        // TODO: 하위문서 처리
+        title:
+          `Project:위키독/${siteInfo.sitename}/` +
+          titleMap[title]!.latestRevision?.wikiTitle,
         revision: revisions,
       },
     ])
