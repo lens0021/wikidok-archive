@@ -75,3 +75,19 @@ test('fillMissingValuesInRevisions', () => {
     '1': { wikiTitle: titleText, timestamp: '2009-05-28T07:46:57Z' },
   })
 })
+
+test('fillMissingValuesInRevisions', () => {
+  const titleText = 'dummy'
+  const revs = Module.fillMissingValuesInRevisions(
+    {
+      '3': { wikiTitle: titleText },
+      '2': { wikiTitle: titleText },
+      '1': { wikiTitle: titleText },
+    },
+    dummySiteInfo,
+  )
+  for (const k of ['1', '2', '3']) {
+    expect(revs[k]).toBeDefined()
+    expect(revs[k]!.timestamp).toBeDefined()
+  }
+})

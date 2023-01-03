@@ -1,18 +1,20 @@
-import { extractRevDataMap } from './parsers/history-page-parser.js'
-import { fillMissingValuesInTitles } from './revision-sanitizer.js'
-import { groupTitle } from './title-map-grouper.js'
-import { CrawledObject } from './types/crawled-object.js'
-import { MwRevision } from './types/mw-revision.js'
-import { MwSiteInfo } from './types/mw-site-info.js'
-import { MwTitleMap } from './types/mw-title.js'
-import { siteInfoFor as siteInfoOf, WdSite } from './types/wd-site.js'
-import * as WikidokUrlParser from './wikidok-url-parser.js'
+import { extractRevDataMap } from './parsers/history-page-parser'
+import { fillMissingValuesInTitles } from './revision-sanitizer'
+import { groupTitle } from './title-map-grouper'
+import { CrawledObject } from './types/crawled-object'
+import { MwRevision } from './types/mw-revision'
+import { MwSiteInfo } from './types/mw-site-info'
+import { MwTitleMap } from './types/mw-title'
+import { siteInfoFor as siteInfoOf, WdSite } from './types/wd-site'
+import * as WikidokUrlParser from './wikidok-url-parser'
 import { default as Args } from 'args'
 import { readdirSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
 import xmlbuilder from 'xmlbuilder'
 
-await main()
+;(async () => {
+  await main()
+})()
 
 async function main() {
   Args.option('wiki', 'The wiki to process', 'veganism')
@@ -183,9 +185,7 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
     }
     for (const rev in titleMap[title]!.revisions) {
       if (titleMap[title]!.revisions[rev]!.timestamp === undefined) {
-        throw Error(
-          'timestamp is null for ' + titleMap[title]!.latestRevision?.wikiTitle,
-        )
+        throw Error('timestamp is null for ' + title)
       }
       if (titleMap[title]!.revisions[rev]!.contributor === undefined) {
         throw Error(

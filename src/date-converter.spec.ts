@@ -2,10 +2,10 @@ import * as Module from './date-converter'
 
 describe('wikidokToUtc', () => {
   it.each`
-    wikidoc               | expected
+    ts                    | expected
     ${'2017.07.05 13:52'} | ${'2017-07-05T04:52:00Z'}
-  `('$wikidoc: $expected', ({ wikidoc, expected }) => {
-    expect(Module.wikidokToUtc(wikidoc)).toBe(expected)
+  `('$ts: $expected', ({ ts, expected }) => {
+    expect(Module.wikidokToUtc(ts)).toBe(expected)
   })
 })
 

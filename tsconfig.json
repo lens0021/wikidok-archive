@@ -1,28 +1,41 @@
 {
-  "extends": "@apify/tsconfig",
+  "extends": "@tsconfig/node18",
   "compilerOptions": {
-    "module": "ES2022",
-    "target": "ES2022",
-    "outDir": "dist",
-
-    /* Type Checking */
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
-    "useUnknownInCatchVariables": true,
-    "alwaysStrict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "exactOptionalPropertyTypes": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "outDir": "dist"
   },
+
+  "ts-node": {
+    "files": true,
+    "esm": true,
+    "require": ["tsconfig-paths/register"],
+
+    "compilerOptions": {
+      "module": "CommonJS",
+      "moduleResolution": "node",
+      "baseUrl": "src",
+
+      /* Type Checking */
+      "strict": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "strictFunctionTypes": true,
+      "strictBindCallApply": true,
+      "strictPropertyInitialization": true,
+      "noImplicitThis": true,
+      "useUnknownInCatchVariables": true,
+      "alwaysStrict": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "exactOptionalPropertyTypes": true,
+      "noImplicitReturns": true,
+      "noFallthroughCasesInSwitch": true,
+      "noUncheckedIndexedAccess": true,
+      "noImplicitOverride": true,
+      "noPropertyAccessFromIndexSignature": true
+    }
+  },
+
   "include": ["./src/**/*"]
 }

@@ -1,6 +1,6 @@
+import { CrawledObject as Data } from './types/crawled-object'
 import { log, CheerioCrawler, Dataset, RequestQueue } from 'crawlee'
 import { exit } from 'process'
-import { CrawledObject as Data } from './types/crawled-object'
 
 const TIME_IS_OVER = true
 
@@ -3146,10 +3146,11 @@ let urls = [
   'http://ko.veganism.wikidok.net/wp-d/630346980c2d47dd5cff1d84',
 ]
 
-await crawler.run(concatHistory(urls))
+;(async () => {
+  await crawler.run(concatHistory(urls))
+})()
 
-await crawler.run(
-  `
+;`
 http://ko.areumdri.wikidok.net/wp-d/5793c26ce70c5cb308fc0a76@1/View
 http://ko.areumdri.wikidok.net/wp-d/5793c26ce70c5cb308fc0a76@2/View
 http://ko.areumdri.wikidok.net/wp-d/5793c26ce70c5cb308fc0a76@3/View
@@ -4975,8 +4976,7 @@ http://ko.areumdri.wikidok.net/wp-d/5b04c7b0fad4980260a95835@177/View
 http://ko.areumdri.wikidok.net/wp-d/5b04c7b0fad4980260a95835@178/View
 http://ko.areumdri.wikidok.net/wp-d/5b04c7b0fad4980260a95835@179/View
 `
-    .trim()
-    .split('\n'),
-)
+  .trim()
+  .split('\n')
 
 log.debug('Crawler finished.')

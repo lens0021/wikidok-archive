@@ -1,4 +1,4 @@
-import { omitUnderSecond, oneSecondAgo } from './date-converter.js'
+import { omitUnderSecond, oneSecondAgo } from './date-converter'
 import { MwRevisionMap } from './types/mw-revision.js'
 import { MwSiteInfo } from './types/mw-site-info.js'
 import { MwTitleMap } from './types/mw-title.js'

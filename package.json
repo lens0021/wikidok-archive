@@ -10,7 +10,6 @@
     "test": "jest"
   },
   "main": "dist/main.ts",
-  "type": "module",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
     "args": "^5.0.3",
@@ -21,6 +20,7 @@
   "devDependencies": {
     "@apify/tsconfig": "^0.1.0",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
+    "@tsconfig/node18": "^1.0.1",
     "@types/args": "^5.0.0",
     "@types/jest": "^29.2.5",
     "@types/node": "^18.11.18",
@@ -28,6 +28,7 @@
     "prettier": "^2.8.1",
     "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.1.2",
     "typescript": "^4.9.4"
   },
   "jest": {

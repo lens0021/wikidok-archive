@@ -5,19 +5,17 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "ts-node",
       "type": "node",
       "request": "launch",
-      "args": [
-        "${relativeFile}"
-      ],
-      "runtimeArgs": [
-        "--loader",
-        "ts-node/esm"
-      ],
+      "name": "Launch Program",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["--loader", "ts-node/esm"],
+
+      "args": ["${relativeFile}"],
+
       "cwd": "${workspaceRoot}",
-      "protocol": "inspector",
-      "internalConsoleOptions": "openOnSessionStart"
+      "internalConsoleOptions": "openOnSessionStart",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"]
     }
   ]
 }
