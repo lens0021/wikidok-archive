@@ -38,7 +38,8 @@
     ],
     "testMatch": [
       "**/*.spec.ts"
-    ]
+    ],
+    "maxWorkers": 1
   },
   "prettier": {
     "semi": false,

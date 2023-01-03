@@ -16,6 +16,7 @@ describe('groupTitle', () => {
     f: newTitle(6),
     g: newTitle(7),
   }
+
   test('three test', () => {
     expect(
       Module.groupTitle(
