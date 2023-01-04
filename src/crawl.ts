@@ -1,6 +1,6 @@
-import { CrawledObject as Data } from 'types/crawled-object.ts'
 import { log, CheerioCrawler, Dataset, RequestQueue } from 'crawlee'
 import { exit } from 'process'
+import { CrawledObject as Data } from 'types/crawled-object.ts'
 
 const TIME_IS_OVER = true
 
@@ -3149,7 +3149,6 @@ let urls = [
 ;(async () => {
   await crawler.run(concatHistory(urls))
 })()
-
 ;`
 http://ko.areumdri.wikidok.net/wp-d/5793c26ce70c5cb308fc0a76@1/View
 http://ko.areumdri.wikidok.net/wp-d/5793c26ce70c5cb308fc0a76@2/View

@@ -34,6 +34,10 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
+    "moduleDirectories": [
+      "node_modules",
+      "src"
+    ],
     "collectCoverageFrom": [
       "**/*.ts"
     ],
@@ -45,6 +49,7 @@
   "prettier": {
     "semi": false,
     "singleQuote": true,
-    "trailingComma": "all"
+    "trailingComma": "all",
+    "importOrderSeparation": true
   }
 }
