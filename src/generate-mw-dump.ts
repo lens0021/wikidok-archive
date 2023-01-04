@@ -13,9 +13,11 @@ import xmlbuilder from 'xmlbuilder'
 async function main() {
   Args.option('wiki', 'The wiki to process', 'veganism')
   Args.option('group', 'export as multiple files', false)
+  // @todo describe
   Args.option('sanitize', '', true)
   const args = Args.parse(process.argv)
 
+  // @todo wd -> wikidok
   const wiki = args['wiki'] as WdSite
   console.log('Generate MediaWiki dump for ' + wiki)
   const doGroup = args['wiki'] as boolean
@@ -23,6 +25,7 @@ async function main() {
 
   const siteInfo = siteInfoOf(wiki)
 
+  // @todo wd -> wikidok
   const wdDump = await readCrawled(wiki)
   const mwTitleDump = createTitleDump(wdDump)
   const mwTitleDumpGroups = doGroup
@@ -33,6 +36,7 @@ async function main() {
     if (sanitize) {
       titleMap = sanitizeTitleMap(titleMap, siteInfo)
     }
+    // atodo do in a function
     const mwDumpObj = generateMwDump(titleMap, siteInfo)
     const xml = xmlbuilder.create(mwDumpObj).end({ pretty: true })
     await saveToFile(xml, wiki, i)
@@ -49,6 +53,7 @@ async function main() {
 async function readCrawled(
   wiki: string | null = null,
 ): Promise<CrawledObject[]> {
+  // @todo paths -> files
   const paths = await readdirSync(`storage/datasets/${wiki}`)
   const crawledObjs = []
   for (const path of paths) {
@@ -60,6 +65,7 @@ async function readCrawled(
   return crawledObjs
 }
 
+/** @todo specify return type */
 function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
   const page = []
 

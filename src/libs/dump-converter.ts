@@ -8,6 +8,7 @@ import { CrawledObject } from 'types/crawled-object.ts'
 import { MwRevision } from 'types/mw-revision.ts'
 import { MwTitleMap } from 'types/mw-title.ts'
 
+/** rename the name of this function */
 export function createTitleDump(crawledObjs: CrawledObject[]): MwTitleMap {
   let titles: MwTitleMap = {}
   for (const crawled of crawledObjs) {

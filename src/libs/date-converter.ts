@@ -15,7 +15,7 @@ export function oneSecondAgo(ts: string): string {
   }
 }
 
-export function omitUnderSecond(ts: string) {
+export function omitUnderSecond(ts: string): string {
   ts = ts.replace(/\.\d\d\dZ/, 'Z')
   return ts
 }
