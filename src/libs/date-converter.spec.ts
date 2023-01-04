@@ -1,4 +1,4 @@
-import * as Module from './date-converter'
+import * as Module from 'libs/date-converter.ts'
 
 describe('wikidokToUtc', () => {
   it.each`

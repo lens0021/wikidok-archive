@@ -1,4 +1,6 @@
-import * as Module from './revision-sanitizer'
+import * as Module from 'libs/revision-sanitizer.ts'
+import * as fillMissingValuesInTitles from "libs/title-sanitizer.ts"
+import { MwRevision } from 'types/mw-revision.ts'
 
 const dummySiteInfo = {
   sitename: 'Dummy Wiki',
@@ -25,7 +27,7 @@ test('reversedIter', () => {
 test('fillMissingValuesInTitleMap', () => {
   const titleText = 'dummy'
   expect(
-    Module.fillMissingValuesInTitles(
+    fillMissingValuesInTitles.fillMissingValuesInTitles(
       {
         titleText: {
           originalRevisionCount: 5,
@@ -43,29 +45,40 @@ test('fillMissingValuesInTitleMap', () => {
   ).toStrictEqual({
     titleText: {
       originalRevisionCount: 5,
+      latestRevision: {
+        wikiTitle: titleText,
+        text: '(데이터 없음)',
+        contributor: 'Dummy Wiki의 기여자',
+        timestamp: '2009-05-28T07:47:01Z',
+      },
       revisions: {
         '5': {
           wikiTitle: titleText,
+          text: '(데이터 없음)',
           contributor: 'Dummy Wiki의 기여자',
           timestamp: '2009-05-28T07:47:01Z',
         },
         '4': {
           wikiTitle: titleText,
+          text: '(데이터 없음)',
           contributor: 'Dummy Wiki의 기여자',
           timestamp: '2009-05-28T07:47:00Z',
         },
         '3': {
           wikiTitle: titleText,
+          text: '(데이터 없음)',
           contributor: 'Dummy Wiki의 기여자',
           timestamp: '2009-05-28T07:46:59Z',
         },
         '2': {
           wikiTitle: titleText,
+          text: '(데이터 없음)',
           contributor: 'Dummy Wiki의 기여자',
           timestamp: '2009-05-28T07:46:58Z',
         },
         '1': {
           wikiTitle: titleText,
+          text: '(데이터 없음)',
           contributor: 'Dummy Wiki의 기여자',
           timestamp: '2009-05-28T07:46:57Z',
         },
@@ -91,26 +104,31 @@ test('fillMissingValuesInRevisions', () => {
     '5': {
       wikiTitle: titleText,
       contributor: 'Dummy Wiki의 기여자',
+      text: '(데이터 없음)',
       timestamp: '2009-05-28T07:47:01Z',
     },
     '4': {
       wikiTitle: titleText,
       contributor: 'Dummy Wiki의 기여자',
+      text: '(데이터 없음)',
       timestamp: '2009-05-28T07:47:00Z',
     },
     '3': {
       wikiTitle: titleText,
       contributor: 'Dummy Wiki의 기여자',
+      text: '(데이터 없음)',
       timestamp: '2009-05-28T07:46:59Z',
     },
     '2': {
       wikiTitle: titleText,
       contributor: 'Dummy Wiki의 기여자',
+      text: '(데이터 없음)',
       timestamp: '2009-05-28T07:46:58Z',
     },
     '1': {
       wikiTitle: titleText,
       contributor: 'Dummy Wiki의 기여자',
+      text: '(데이터 없음)',
       timestamp: '2009-05-28T07:46:57Z',
     },
   })
@@ -157,5 +175,16 @@ test('fillMissingRevisions', () => {
       contributor: 'Dummy Wiki의 기여자',
       text: '(데이터 없음)',
     },
+  })
+})
+
+describe('findLatestRevisionCount', () => {
+  const rev: MwRevision = { wikiTitle: 'Dummy' }
+  it.each`
+    rev                       | expected
+    ${{ '4': rev }}           | ${4}
+    ${{ '2': rev, '1': rev }} | ${2}
+  `('$rev', ({ rev, expected }) => {
+    expect(Module.findLatestRevisionCount(rev)).toBe(expected)
   })
 })

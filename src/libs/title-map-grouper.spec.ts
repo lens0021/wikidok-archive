@@ -1,4 +1,4 @@
-import * as Module from './title-map-grouper'
+import * as Module from 'libs/title-map-grouper.ts'
 
 describe('groupTitle', () => {
   function newTitle(count: number) {

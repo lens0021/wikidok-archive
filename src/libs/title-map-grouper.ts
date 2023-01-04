@@ -1,4 +1,4 @@
-import { MwTitleMap } from './types/mw-title'
+import { MwTitleMap } from 'types/mw-title.ts'
 
 export function groupTitle(
   titles: MwTitleMap,

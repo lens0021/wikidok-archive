@@ -3,7 +3,11 @@
   "compilerOptions": {
     "module": "CommonJS",
     "moduleResolution": "node",
-    "outDir": "dist"
+    "outDir": "dist",
+    "baseUrl": "./src",
+    "paths": {
+      "*.ts": ["*"]
+    }
   },
 
   "ts-node": {

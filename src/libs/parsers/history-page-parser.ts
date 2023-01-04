@@ -1,4 +1,4 @@
-import { wikidokToUtc } from '../date-converter'
+import { wikidokToUtc } from 'libs/date-converter.ts'
 import { decode } from 'html-entities'
 
 export interface RevDataMap {

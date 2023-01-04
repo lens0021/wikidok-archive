@@ -1,5 +1,5 @@
-import { wikidokToUtc } from '../date-converter'
-import * as Module from './history-page-parser'
+import { wikidokToUtc } from 'libs/date-converter.ts'
+import * as Module from 'libs/parsers/history-page-parser.ts'
 
 test('empty string', () => {
   expect(Module.extractRevDataMap('')).toStrictEqual({})

@@ -1,15 +1,15 @@
-import { extractRevDataMap } from './parsers/history-page-parser'
-import { fillMissingValuesInTitles } from './revision-sanitizer'
-import { groupTitle } from './title-map-grouper'
-import { CrawledObject } from './types/crawled-object'
-import { MwRevision } from './types/mw-revision'
-import { MwSiteInfo } from './types/mw-site-info'
-import { MwTitleMap } from './types/mw-title'
-import { siteInfoFor as siteInfoOf, WdSite } from './types/wd-site'
-import * as WikidokUrlParser from './wikidok-url-parser'
 import { default as Args } from 'args'
 import { readdirSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
+import { groupTitle } from 'libs/title-map-grouper.ts'
+import { fillMissingValuesInTitles } from 'libs/title-sanitizer.ts'
+import * as WikidokUrlParser from 'libs/wikidok-url-parser.ts'
+import { extractRevDataMap } from 'libs/parsers/history-page-parser.ts'
+import { CrawledObject } from 'types/crawled-object.ts'
+import { MwRevision } from 'types/mw-revision.ts'
+import { MwSiteInfo } from 'types/mw-site-info.ts'
+import { MwTitleMap } from 'types/mw-title.ts'
+import { siteInfoFor as siteInfoOf, WdSite } from 'types/wd-site.ts'
 import xmlbuilder from 'xmlbuilder'
 
 ;(async () => {
@@ -53,6 +53,9 @@ async function readCrawled(
 
 function createTitleDump(crawledObjs: CrawledObject[]): MwTitleMap {
   let titles: MwTitleMap = {}
+  if (titles['595c84031fafad8d03baaa94']) {
+    debugger
+  }
   for (const crawled of crawledObjs) {
     if (!crawled.wikiTitle) {
       console.warn('There is no wikiTitle: ' + crawled.wikiTitle)
@@ -73,6 +76,10 @@ function createTitleDump(crawledObjs: CrawledObject[]): MwTitleMap {
     if (isRevision) {
       titles = applyCrawledRevision(crawled, id, revId, titles)
     }
+  }
+
+  if (titles['595c84031fafad8d03baaa94']) {
+    debugger
   }
   return titles
 }
@@ -127,8 +134,14 @@ function applyCrawledRevision(
   revId: number,
   titles: MwTitleMap,
 ) {
+  if (titles['595c84031fafad8d03baaa94']) {
+    debugger
+  }
   const rev: MwRevision = {
     wikiTitle: crawled.wikiTitle!,
+  }
+  if (id == '595c84031fafad8d03baaa94') {
+    debugger
   }
   if (crawled.postContents) {
     rev.text = crawled.postContents
@@ -157,6 +170,10 @@ function applyCrawledRevision(
     } else {
       titles[id]!.latestRevision = rev
     }
+  }
+
+  if (titles['595c84031fafad8d03baaa94']) {
+    debugger
   }
 
   return titles
@@ -208,6 +225,10 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
           '#text': titleMap[title]!.revisions[rev]?.text,
         },
       })
+    }
+    if (titleMap[title]!.latestRevision?.wikiTitle === undefined) {
+      // debugger
+      continue
     }
     page.push([
       {

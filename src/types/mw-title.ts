@@ -1,4 +1,4 @@
-import { MwRevision, MwRevisionMap } from './mw-revision'
+import { MwRevision, MwRevisionMap } from 'types/mw-revision.ts'
 
 
 /**
