@@ -2,6 +2,7 @@
   "name": "wikidok-archive",
   "version": "1.0.0",
   "scripts": {
+    "lint": "prettier . --check && tsc",
     "build": "tsc",
     "ts-node": "ts-node-esm -T",
     "crawl:prod": "node dist/main.js",

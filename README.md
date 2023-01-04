@@ -36,10 +36,7 @@ docker cp mw-dump/veganism-0.xml "$CONTAINER_ID":/root
 
 # Import
 # 정확한 미디어위키의 위치는 사용하는 도커 이미지의 README를 참고하십시오.
-# --dry-run을 생략하면 진짜로 불러옵니다.
 docker exec $(docker ps -qf 'name=fastcgi') php maintenance/importDump.php \
-  --report \
-  --dry-run \
   /root/veganism-0.xml
 ```
 
