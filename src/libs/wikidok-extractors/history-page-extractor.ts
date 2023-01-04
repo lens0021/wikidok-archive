@@ -7,7 +7,6 @@ export function extractRevisionMap(
   html: string,
   crawled?: CrawledObject,
 ): MwRevisionMap {
-  html = html.replaceAll(/[\n\t\r]/g, '')
   const rexRow = new RegExp(
     `<a href=\\"\\/wp-d\\/(?<id>[^@]+)@(?<revId>\\d+)\\/View\\" class=\\"pjax-link\\">(?<ts>\\d{4}\\.\\d{2}\\.\\d{2} \\d+:\\d+)<\\/a><\\/td>` +
       `<td class=\\"td-m\\"><a href=\\"\\/wt\\/EditList\\/(?<contributor>[^"]+)\\" class=\\"pjax-link\\">[^<]+<\\/a><\\/td>` +

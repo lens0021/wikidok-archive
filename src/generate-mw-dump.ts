@@ -43,14 +43,15 @@ async function main() {
   await main()
 })()
 
+/**
+ * @todo Use relative path
+ */
 async function readCrawled(
   wiki: string | null = null,
 ): Promise<CrawledObject[]> {
-  // TODO: Use relative path
   const paths = await readdirSync(`storage/datasets/${wiki}`)
   const crawledObjs = []
   for (const path of paths) {
-    // TODO: Use relative path
     const file = await readFile(`storage/datasets/${wiki}/${path}`, 'utf8')
     const crawledObj = JSON.parse(file) as CrawledObject
     crawledObj.filename = path
@@ -97,10 +98,6 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
         },
         text: {
           '@xml:space': 'preserve',
-          // TODO: Remove redundant numberings in the header
-          // TODO: Parse <a> tags
-          // TODO: Replace <img> tags
-          // TODO: Remove <tbody> tags
           '#text': titleMap[title]!.revisions[rev]?.text,
         },
       })

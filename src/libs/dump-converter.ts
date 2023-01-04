@@ -12,7 +12,7 @@ export function createTitleDump(crawledObjs: CrawledObject[]): MwTitleMap {
   let titles: MwTitleMap = {}
   for (const crawled of crawledObjs) {
     if (!crawled.wikiTitle) {
-      console.warn('There is no wikiTitle: ' + crawled.wikiTitle)
+      console.warn('There is no wikiTitle: ' + crawled.url)
       continue
     }
     titles = applyCrawledPage(crawled, titles)
@@ -70,6 +70,7 @@ export function applyCrawledHistory(
   return titleMap
 }
 
+/** @todo Merge revisions over crawls */
 export function applyCrawledRevision(
   crawled: CrawledObject,
   titles: MwTitleMap,
