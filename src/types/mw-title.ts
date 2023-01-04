@@ -1,6 +1,5 @@
 import { MwRevision, MwRevisionMap } from 'types/mw-revision.ts'
 
-
 /**
  * "Title" is a term used in the MediaWiki environment.
  */

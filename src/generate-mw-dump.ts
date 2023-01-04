@@ -11,7 +11,6 @@ import { MwSiteInfo } from 'types/mw-site-info.ts'
 import { MwTitleMap } from 'types/mw-title.ts'
 import { siteInfoFor as siteInfoOf, WdSite } from 'types/wd-site.ts'
 import xmlbuilder from 'xmlbuilder'
-
 ;(async () => {
   await main()
 })()

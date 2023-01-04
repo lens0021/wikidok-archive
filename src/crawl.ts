@@ -1,4 +1,4 @@
-import { log, CheerioCrawler, Dataset, RequestQueue } from 'crawlee'
+import { CheerioCrawler, Dataset, log, RequestQueue } from 'crawlee'
 import { exit } from 'process'
 import { CrawledObject as Data } from 'types/crawled-object.ts'
 

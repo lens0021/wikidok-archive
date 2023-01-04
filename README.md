@@ -57,4 +57,4 @@ TBD
 yarn generate-xml
 ```
 
-[ImportDump.php]:https://www.mediawiki.org/wiki/Special:MyLanguage/Manual:ImportDump.php
+[importdump.php]: https://www.mediawiki.org/wiki/Special:MyLanguage/Manual:ImportDump.php
