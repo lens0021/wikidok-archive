@@ -1,5 +1,5 @@
-import { omitUnderSecond, oneSecondAgo } from 'libs/date-converter.ts'
-import { MwRevisionMap } from 'types/mw-revision.ts'
+import { oneSecondAgo } from 'libs/date-converter.ts'
+import { MwRevision, MwRevisionMap } from 'types/mw-revision.ts'
 import { MwSiteInfo } from 'types/mw-site-info.ts'
 
 export function sanitizeRevisionMap(
@@ -28,14 +28,12 @@ export function fillMissingValuesInRevisionMap(
       if (revisionMap[revId]!.timestamp !== undefined) {
         latestTimestamp = revisionMap[revId]!.timestamp!
       } else {
-        latestTimestamp = omitUnderSecond(new Date().toISOString())
+        latestTimestamp = new Date().toISOString()
         revisionMap[revId]!.timestamp = latestTimestamp
-        if (revisionMap[revId]!.comment === undefined) {
-          revisionMap[revId]!.comment = ''
-        }
-        revisionMap[revId]!.comment =
-          revisionMap[revId]!.comment +
-          '(이 판의 편집 시간은 정확한 것이 아니며 상대적인 값입니다)'
+        revisionMap[revId]! = appendComment(
+          '(이 판의 편집 시간은 정확한 것이 아니며 상대적인 값입니다)',
+          revisionMap[revId]!,
+        )
       }
       continue
     }
@@ -43,9 +41,24 @@ export function fillMissingValuesInRevisionMap(
       const ago = oneSecondAgo(latestTimestamp)
       revisionMap[revId]!.timestamp = ago
       latestTimestamp = ago
+      revisionMap[revId]! = appendComment(
+        '(이 판의 편집 시간은 정확한 것이 아니며 상대적인 값입니다)',
+        revisionMap[revId]!,
+      )
     }
   }
   return revisionMap
+}
+
+export function appendComment(
+  comment: string | undefined,
+  revision: MwRevision,
+): MwRevision {
+  if (revision.comment === undefined) {
+    revision.comment = '(편집 요약 데이터 없음)'
+  }
+  revision.comment += comment
+  return revision
 }
 
 export function reversedIter(revisions: MwRevisionMap): string[] {
@@ -61,7 +74,9 @@ export function fillMissingRevisions(
 ): MwRevisionMap {
   const latestIndex = findLatestRevisionCount(revisions)
   for (let i = 1; i < latestIndex; i++) {
-    revisions[i] = {}
+    if (revisions[i] === undefined) {
+      revisions[i] = {}
+    }
   }
   return revisions
 }

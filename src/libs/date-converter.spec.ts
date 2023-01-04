@@ -23,6 +23,7 @@ describe('omitUnderSecond', () => {
   it.each`
     ts                            | expected
     ${'2017-07-05T04:52:00.000Z'} | ${'2017-07-05T04:52:00Z'}
+    ${'2017-07-05T04:52:12.345Z'} | ${'2017-07-05T04:52:12Z'}
   `('$ts: $expected', ({ ts, expected }) => {
     expect(Module.omitUnderSecond(ts)).toBe(expected)
   })

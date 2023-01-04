@@ -72,6 +72,40 @@ test('fillMissingValuesInRevisions', () => {
 
 test('fillMissingValuesInRevisions', () => {
   const titleText = 'dummy'
+  expect(
+    Module.fillMissingValuesInRevisionMap(
+      {
+        '2': {
+          wikiTitle: titleText,
+          timestamp: '2009-05-28T07:47:01Z',
+          contributor: 'Foo',
+        },
+        '1': {
+          wikiTitle: titleText,
+          timestamp: '2009-05-28T07:47:01Z',
+          contributor: 'Foo',
+        },
+      },
+      dummySiteInfo,
+    ),
+  ).toStrictEqual({
+    '2': {
+      wikiTitle: titleText,
+      contributor: 'Foo',
+      text: '(데이터 없음)',
+      timestamp: '2009-05-28T07:47:01Z',
+    },
+    '1': {
+      wikiTitle: titleText,
+      contributor: 'Foo',
+      text: '(데이터 없음)',
+      timestamp: '2009-05-28T07:47:01Z',
+    },
+  })
+})
+
+test('fillMissingValuesInRevisions', () => {
+  const titleText = 'dummy'
   const revs = Module.fillMissingValuesInRevisionMap(
     {
       '3': { wikiTitle: titleText },
@@ -86,21 +120,39 @@ test('fillMissingValuesInRevisions', () => {
   }
 })
 
-test('fillMissingRevisions', () => {
-  const titleText = 'dummy'
-  const revs = Module.fillMissingRevisions(
+describe('fillMissingRevisions', () => {
+  it.each([
     {
-      '3': { wikiTitle: titleText, timestamp: '2009-05-28T07:46:58Z' },
+      msg: 'Fill missing revs',
+      revs: {
+        '3': { wikiTitle: 'dummy', timestamp: '2009-05-28T07:46:58Z' },
+      },
+      expected: {
+        '3': {
+          wikiTitle: 'dummy',
+          timestamp: '2009-05-28T07:46:58Z',
+        },
+        '2': {},
+        '1': {},
+      },
     },
-    dummySiteInfo,
-  )
-  expect(revs).toStrictEqual({
-    '3': {
-      wikiTitle: titleText,
-      timestamp: '2009-05-28T07:46:58Z',
+    {
+      msg: 'Do not overwrite',
+      revs: {
+        '3': { wikiTitle: 'dummy', timestamp: '2009-05-28T07:46:58Z' },
+        '2': { wikiTitle: 'dummy', timestamp: '2009-05-28T07:46:56Z' },
+        '1': { wikiTitle: 'dummy', timestamp: '2009-05-28T07:46:54Z' },
+      },
+      expected: {
+        '3': { wikiTitle: 'dummy', timestamp: '2009-05-28T07:46:58Z' },
+        '2': { wikiTitle: 'dummy', timestamp: '2009-05-28T07:46:56Z' },
+        '1': { wikiTitle: 'dummy', timestamp: '2009-05-28T07:46:54Z' },
+      },
     },
-    '2': {},
-    '1': {},
+  ])('$msg', ({ msg, revs, expected }) => {
+    const actual = Module.fillMissingRevisions(revs, dummySiteInfo)
+    expect(actual).toStrictEqual(expected)
+    msg
   })
 })
 

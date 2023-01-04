@@ -1,7 +1,9 @@
+import { mergeRevisions } from 'libs/dump-converter.ts'
 import { MwSiteInfo } from 'types/mw-site-info.ts'
 import { MwTitle, MwTitleMap } from 'types/mw-title.ts'
 import {
   fillMissingRevisions,
+  findLatestRevisionCount,
   sanitizeRevisionMap,
 } from './revision-map-sanitizer'
 
@@ -10,6 +12,7 @@ export function sanitizeTitleMap(
   siteInfo: MwSiteInfo,
 ): MwTitleMap {
   titleMap = fillMissingValuesInTitleMap(titleMap, siteInfo)
+  titleMap = adjustLatestRevisionInTitleMap(titleMap)
   return titleMap
 }
 
@@ -43,5 +46,29 @@ export function fillMissingValuesInTitle(
     title.latestRevision = title.revisions[String(title.originalRevisionCount)]!
   }
 
+  return title
+}
+
+export function adjustLatestRevisionInTitleMap(
+  titleMap: MwTitleMap,
+): MwTitleMap {
+  for (const title in titleMap) {
+    titleMap[title] = adjustLatestRevisionInTitle(titleMap[title]!)
+  }
+  return titleMap
+}
+
+export function adjustLatestRevisionInTitle(title: MwTitle): MwTitle {
+  const latestRev = title.latestRevision
+  const latestIndex: number = Math.max(
+    findLatestRevisionCount(title.revisions),
+    title.originalRevisionCount,
+  )
+  const maybeLatestRev = title.revisions[latestIndex]
+
+  const merged = mergeRevisions(latestRev, maybeLatestRev)
+
+  title.revisions[String(latestIndex)] = merged
+  title.latestRevision = merged
   return title
 }

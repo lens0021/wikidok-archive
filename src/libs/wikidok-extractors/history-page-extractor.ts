@@ -24,12 +24,12 @@ export function extractRevisionMap(
     const revId = g['revId']!,
       ts = g['ts']!,
       contributor = g['contributor']!
-    const comment =
-      g['comment'] !== '' ? decode(g['comment']!) : '(데이터 없음)'
     map[revId] = {
       timestamp: wikidokToUtc(ts),
       contributor,
-      comment,
+    }
+    if (g['comment'] !== undefined) {
+      map[revId]!.comment = decode(g['comment']!)
     }
     const pageTitle = crawled?.wikiTitle
     if (pageTitle !== undefined) {

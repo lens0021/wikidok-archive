@@ -1,33 +1,39 @@
 import { default as Args } from 'args'
 import { readdirSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
+import { createTitleDump } from 'libs/dump-converter'
 import { sanitizeTitleMap } from 'libs/sanitizers/title-map-sanitizer.ts'
 import { groupTitle } from 'libs/title-map-grouper.ts'
-import { extractRevisionMap } from 'libs/wikidok-extractors/history-page-extractor.ts'
-import * as WikidokUrlParser from 'libs/wikidok-url-parser.ts'
 import { CrawledObject } from 'types/crawled-object.ts'
-import { MwRevision } from 'types/mw-revision.ts'
 import { MwSiteInfo } from 'types/mw-site-info.ts'
 import { MwTitleMap } from 'types/mw-title.ts'
 import { siteInfoFor as siteInfoOf, WdSite } from 'types/wd-site.ts'
-import { PageId, RevisionId } from 'types/wikidok.ts'
 import xmlbuilder from 'xmlbuilder'
 
 async function main() {
   Args.option('wiki', 'The wiki to process', 'veganism')
   Args.option('group', 'export as multiple files', false)
+  Args.option('sanitize', '', true)
   const args = Args.parse(process.argv)
 
   const wiki = args['wiki'] as WdSite
   console.log('Generate MediaWiki dump for ' + wiki)
-  const GROUP = args['wiki'] as boolean
+  const doGroup = args['wiki'] as boolean
+  const sanitize = args['sanitize'] as boolean
 
-  const wikidokDump = await readCrawled(wiki)
-  const titleDump = createTitleDump(wikidokDump)
-  const titleGroups = GROUP ? groupTitle(titleDump, 3000) : [titleDump]
-  for (const i of titleGroups.keys()) {
-    const group = titleGroups[i] as MwTitleMap
-    const mwDumpObj = generateMwDump(group, siteInfoOf(wiki))
+  const siteInfo = siteInfoOf(wiki)
+
+  const wdDump = await readCrawled(wiki)
+  const mwTitleDump = createTitleDump(wdDump)
+  const mwTitleDumpGroups = doGroup
+    ? groupTitle(mwTitleDump, 3000)
+    : [mwTitleDump]
+  for (const i of mwTitleDumpGroups.keys()) {
+    let titleMap: MwTitleMap = mwTitleDumpGroups[i]!
+    if (sanitize) {
+      titleMap = sanitizeTitleMap(titleMap, siteInfo)
+    }
+    const mwDumpObj = generateMwDump(titleMap, siteInfo)
     const xml = xmlbuilder.create(mwDumpObj).end({ pretty: true })
     await saveToFile(xml, wiki, i)
   }
@@ -53,126 +59,9 @@ async function readCrawled(
   return crawledObjs
 }
 
-function createTitleDump(crawledObjs: CrawledObject[]): MwTitleMap {
-  let titles: MwTitleMap = {}
-  for (const crawled of crawledObjs) {
-    if (!crawled.wikiTitle) {
-      console.warn('There is no wikiTitle: ' + crawled.wikiTitle)
-      continue
-    }
-    const pageId = WikidokUrlParser.pageId(crawled.url)
-    if (pageId === null) {
-      console.warn('Failed to extract id from url:' + crawled.url)
-      continue
-    }
-    const isHistory = WikidokUrlParser.isHistoryPage(crawled.url)
-    if (isHistory) {
-      titles = applyCrawledHistory(crawled, pageId, titles)
-      continue
-    }
-    const revId = WikidokUrlParser.revisionId(crawled.url),
-      isRevision = revId !== null
-    if (isRevision) {
-      titles = applyCrawledRevision(crawled, pageId, revId, titles)
-    }
-  }
-
-  return titles
-}
-
-function applyCrawledHistory(
-  crawled: CrawledObject,
-  pageId: PageId,
-  titleMap: MwTitleMap,
-) {
-  if (crawled.tblHistory === undefined || pageId === null) {
-    return titleMap
-  }
-
-  const revisionMap = extractRevisionMap(crawled.tblHistory, crawled)
-  for (const strRevId in revisionMap) {
-    const revId = parseInt(strRevId)
-
-    if (titleMap[pageId] === undefined) {
-      titleMap[pageId] = {
-        originalRevisionCount: Object.keys(revisionMap).length,
-        revisions: revisionMap,
-      }
-    }
-    const originRevCnt = titleMap[pageId]!.originalRevisionCount
-    if (originRevCnt !== undefined && originRevCnt < revId) {
-      titleMap[pageId]!.originalRevisionCount = revId
-    }
-    if (revisionMap[revId]) {
-      const timestamp = revisionMap[revId]?.timestamp
-      if (timestamp && titleMap[pageId]!.revisions[revId]) {
-        titleMap[pageId]!.revisions[revId]!.timestamp = timestamp
-      }
-
-      const contributor = revisionMap[revId]?.contributor
-      if (contributor && titleMap[pageId]!.revisions[revId]) {
-        titleMap[pageId]!.revisions[revId]!.contributor = contributor
-      }
-
-      const comment = revisionMap[revId]?.comment
-      if (comment && titleMap[pageId]!.revisions[revId]) {
-        titleMap[pageId]!.revisions[revId]!.comment = comment
-      }
-    }
-  }
-
-  return titleMap
-}
-
-function applyCrawledRevision(
-  crawled: CrawledObject,
-  pageId: PageId,
-  revId: RevisionId,
-  titles: MwTitleMap,
-) {
-  const rev: MwRevision = {
-    wikiTitle: crawled.wikiTitle!,
-  }
-  if (crawled.postContents) {
-    rev.text = crawled.postContents
-  }
-
-  const titleIsShipped = titles[pageId] !== undefined
-  if (titleIsShipped) {
-    const revisionIsShipped = titles[pageId]!.revisions[revId] !== undefined
-    if (revisionIsShipped) {
-      console.log(`Duplicated: ${pageId}@${revId}`)
-      return titles
-    }
-    titles[pageId]!.revisions[revId.toString()] = rev
-    if (titles[pageId]!.originalRevisionCount < revId) {
-      titles[pageId]!.originalRevisionCount = revId
-    }
-  } else {
-    titles[pageId] = {
-      originalRevisionCount: 1,
-      revisions: {},
-    }
-    if (revId !== null) {
-      if (titles[pageId] !== undefined) {
-        titles[pageId]!.revisions[revId.toString()] = rev
-      }
-    } else {
-      titles[pageId]!.latestRevision = rev
-    }
-  }
-
-  return titles
-}
-
 function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
-  const duplications = checkDuplications(titleMap)
-  if (duplications.length > 0) {
-    console.log('Duplicated Titles are ignored:')
-    console.log(duplications)
-  }
   const page = []
-  titleMap = sanitizeTitleMap(titleMap, siteInfo)
+
   for (const title in titleMap) {
     const revisions = []
     for (const rev in titleMap[title]!.revisions) {
@@ -205,9 +94,10 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
         },
         text: {
           '@xml:space': 'preserve',
+          // TODO: Remove redundant numberings in the header
           // TODO: Parse <a> tags
           // TODO: Replace <img> tags
-          // TODO: Replace <tbody> tags
+          // TODO: Remove <tbody> tags
           '#text': titleMap[title]!.revisions[rev]?.text,
         },
       })
@@ -221,7 +111,6 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
     }
     page.push([
       {
-        // TODO: \[\] 같은 특수문자 처리
         title:
           `Project:위키독/${siteInfo.sitename}/` +
           titleMap[title]!.latestRevision?.wikiTitle,
@@ -262,9 +151,4 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
 async function saveToFile(xml: string, wiki: WdSite, step: number) {
   const file = `./mw-dump/${wiki}-${step}.xml`
   await writeFile(file, xml)
-}
-
-function checkDuplications(_dumps: MwTitleMap): string[] {
-  // TODO
-  return []
 }

@@ -15,10 +15,7 @@ export function oneSecondAgo(ts: string): string {
   }
 }
 
-/**
- * @note Wikidok did not give the second, so timestamps are always ends with 00.000Z
- */
 export function omitUnderSecond(ts: string) {
-  ts = ts.replace('.000Z', 'Z')
+  ts = ts.replace(/\.\d\d\dZ/, 'Z')
   return ts
 }

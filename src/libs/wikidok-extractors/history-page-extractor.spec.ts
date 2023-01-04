@@ -64,7 +64,7 @@ describe('rows', () => {
         '4': {
           timestamp: '2017-12-11T06:39:00Z',
           contributor: 'asdf',
-          comment: '(데이터 없음)',
+          comment: '',
         },
         '5': {
           timestamp: '2018-03-30T14:07:00Z',
@@ -74,8 +74,8 @@ describe('rows', () => {
       },
     },
   ])('$msg', ({ msg, raw, expected }) => {
-    msg
     expect(Module.extractRevisionMap(raw)).toStrictEqual(expected)
+    msg
   })
 })
 
@@ -128,22 +128,22 @@ test('비건편의점 위키를 열었습니다/History', () => {
     `</tr>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t`
   expect(Module.extractRevisionMap(raw)).toStrictEqual({
     '1': {
-      comment: '(데이터 없음)',
+      comment: '',
       contributor: 'asdf',
       timestamp: '2017-07-05T04:52:00Z',
     },
     '2': {
-      comment: '(데이터 없음)',
+      comment: '',
       contributor: 'asdf',
       timestamp: '2017-07-05T05:03:00Z',
     },
     '3': {
-      comment: '(데이터 없음)',
+      comment: '',
       contributor: 'asdf',
       timestamp: '2017-07-05T05:26:00Z',
     },
     '4': {
-      comment: '(데이터 없음)',
+      comment: '',
       contributor: 'asdf',
       timestamp: '2017-12-11T06:39:00Z',
     },
