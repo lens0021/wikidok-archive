@@ -52,7 +52,7 @@ TBD
 #### 미디어위키에서 불러올 수 있는 파일 생성하기
 
 ```
-yarn generate-xml
+yarn generate-mw-dump
 ```
 
 [importdump.php]: https://www.mediawiki.org/wiki/Special:MyLanguage/Manual:ImportDump.php
