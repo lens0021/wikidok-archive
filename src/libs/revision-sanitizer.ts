@@ -50,6 +50,10 @@ export function fillMissingRevisions(
   revisions: MwRevisionMap,
   _siteInfo: MwSiteInfo,
 ): MwRevisionMap {
+  const latestIndex = findLatestRevisionCount(revisions)
+  for (let i = 1; i < latestIndex; i++) {
+    revisions[i] = {}
+  }
   return revisions
 }
 

@@ -99,18 +99,8 @@ test('fillMissingRevisions', () => {
       wikiTitle: titleText,
       timestamp: '2009-05-28T07:46:58Z',
     },
-    '2': {
-      wikiTitle: titleText,
-      timestamp: '2009-05-28T07:46:57Z',
-      contributor: 'Dummy Wiki의 기여자',
-      text: '(데이터 없음)',
-    },
-    '1': {
-      wikiTitle: titleText,
-      timestamp: '2009-05-28T07:46:56Z',
-      contributor: 'Dummy Wiki의 기여자',
-      text: '(데이터 없음)',
-    },
+    '2': {},
+    '1': {},
   })
 })
 

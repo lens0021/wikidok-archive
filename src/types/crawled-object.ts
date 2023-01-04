@@ -3,6 +3,7 @@ export interface CrawledObject {
 
   url: string
   loadedUrl?: string
+  // document.title
   title?: string
 
   wikiTitle?: string

@@ -1,4 +1,4 @@
-export function id(url: string) {
+export function pageId(url: string) {
   const m = url.match(/http:\/\/ko\..+\.wikidok\.net\/wp-[cd]\/([^@\/]+)/)
   if (m && m[1]) {
     return m[1]

@@ -1,8 +1,8 @@
 import { wikidokToUtc } from 'libs/date-converter.ts'
-import * as Module from 'libs/parsers/history-page-parser.ts'
+import * as Module from 'libs/wikidok-extractors/history-page-extractor.ts'
 
 test('empty string', () => {
-  expect(Module.extractRevDataMap('')).toStrictEqual({})
+  expect(Module.extractRevisionMap('')).toStrictEqual({})
 })
 
 test('extractRevDataMap', () => {
@@ -12,7 +12,7 @@ test('extractRevDataMap', () => {
     `<td class=\"td-m\"><a href=\"/wt/EditList/asdf\" class=\"pjax-link\">asdf</a></td>\r\n\t\t\t\t\t\t\t\t\t` +
     `<td class=\"td-m\">33473 (-96)</td>\r\n\t\t\t\t\t\t\t\t\t` +
     `<td class=\"td-m text-left\">&#xb808;&#xc9c4;&#xcf54;&#xbbf9;&#xc2a4; &#xbd88;&#xacf5;&#xc815;&#xd589;&#xc704; &#xc0ac;&#xd0dc; &#xcd94;&#xac00;.</td>`
-  expect(Module.extractRevDataMap(raw)).toStrictEqual({
+  expect(Module.extractRevisionMap(raw)).toStrictEqual({
     '118': {
       timestamp: wikidokToUtc('2020.07.09 16:19'),
       contributor: 'asdf',
@@ -75,7 +75,7 @@ describe('rows', () => {
     },
   ])('$msg', ({ msg, raw, expected }) => {
     msg
-    expect(Module.extractRevDataMap(raw)).toStrictEqual(expected)
+    expect(Module.extractRevisionMap(raw)).toStrictEqual(expected)
   })
 })
 
@@ -126,7 +126,7 @@ test('비건편의점 위키를 열었습니다/History', () => {
     `<td class=\"td-m\"><a href=\"/wt/EditList/asdf\" class=\"pjax-link\">asdf</a></td>\r\n\t\t\t\t\t\t\t\t\t<td class=\"td-m\">530 (530)</td>\r\n\t\t\t\t\t\t\t\t\t` +
     `<td class=\"td-m text-left\"></td>\r\n\t\t\t\t\t\t\t\t` +
     `</tr>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t`
-  expect(Module.extractRevDataMap(raw)).toStrictEqual({
+  expect(Module.extractRevisionMap(raw)).toStrictEqual({
     '1': {
       comment: '(데이터 없음)',
       contributor: 'asdf',

@@ -1,5 +1,5 @@
 export interface MwRevision {
-  wikiTitle: string
+  wikiTitle?: string
   text?: string
   timestamp?: string
   contributor?: string

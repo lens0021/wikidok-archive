@@ -1,45 +1,39 @@
 import { MwSiteInfo } from 'types/mw-site-info.ts'
-import { MwTitleMap } from 'types/mw-title.ts'
+import { MwTitle, MwTitleMap } from 'types/mw-title.ts'
 import {
   fillMissingRevisions,
   fillMissingValuesInRevisions,
 } from './revision-sanitizer'
 
-export function fillMissingValuesInTitles(
+export function fillMissingValuesInTitleMap(
   titleMap: MwTitleMap,
   siteInfo: MwSiteInfo,
 ): MwTitleMap {
   for (const title in titleMap) {
-    if (
-      titleMap[title]!.latestRevision &&
-      titleMap[title]!.originalRevisionCount
-    ) {
-      const latest = titleMap[title]!.latestRevision!
-      const originRevCnt = titleMap[title]!.originalRevisionCount!
-      if (originRevCnt) {
-        titleMap[title]!.revisions[originRevCnt] = latest
-      }
-    }
-
-    titleMap[title]!.revisions = fillMissingRevisions(
-      titleMap[title]!.revisions,
-      siteInfo,
-    )
-    titleMap[title]!.revisions = fillMissingValuesInRevisions(
-      titleMap[title]!.revisions,
-      siteInfo,
-    )
-
-    if (
-      !titleMap[title]!.latestRevision &&
-      titleMap[title]!.originalRevisionCount
-    ) {
-      titleMap[title]!.latestRevision =
-        titleMap[title]!.revisions[
-          String(titleMap[title]!.originalRevisionCount)
-        ]!
-    }
+    titleMap[title] = fillMissingValuesInTitle(titleMap[title]!, siteInfo)
   }
 
   return titleMap
+}
+
+export function fillMissingValuesInTitle(
+  title: MwTitle,
+  siteInfo: MwSiteInfo,
+): MwTitle {
+  if (title.latestRevision && title.originalRevisionCount) {
+    const latest = title.latestRevision!
+    const originRevCnt = title.originalRevisionCount!
+    if (originRevCnt) {
+      title.revisions[originRevCnt] = latest
+    }
+  }
+
+  title.revisions = fillMissingRevisions(title.revisions, siteInfo)
+  title.revisions = fillMissingValuesInRevisions(title.revisions, siteInfo)
+
+  if (!title.latestRevision && title.originalRevisionCount) {
+    title.latestRevision = title.revisions[String(title.originalRevisionCount)]!
+  }
+
+  return title
 }
