@@ -28,11 +28,14 @@ test('fillMissingValuesInRevisions', () => {
   expect(
     Module.fillMissingValuesInRevisionMap(
       {
-        '5': { wikiTitle: titleText, timestamp: '2009-05-28T07:47:01Z' },
-        '4': { wikiTitle: titleText },
-        '3': { wikiTitle: titleText },
-        '2': { wikiTitle: titleText },
-        '1': { wikiTitle: titleText },
+        '5': {
+          wikiTitle: titleText,
+          timestamp: '2009-05-28T07:47:01Z',
+        },
+        '4': { wikiTitle: titleText, comment: '' },
+        '3': { wikiTitle: titleText, comment: '' },
+        '2': { wikiTitle: titleText, comment: '' },
+        '1': { wikiTitle: titleText, comment: '' },
       },
       dummySiteInfo,
     ),
@@ -46,24 +49,28 @@ test('fillMissingValuesInRevisions', () => {
     '4': {
       wikiTitle: titleText,
       contributor: 'Dummy Wiki의 기여자',
+      comment: '(이 판의 편집 시간은 정확한 것이 아니며 상대적인 값입니다)',
       text: '(데이터 없음)',
       timestamp: '2009-05-28T07:47:00Z',
     },
     '3': {
       wikiTitle: titleText,
       contributor: 'Dummy Wiki의 기여자',
+      comment: '(이 판의 편집 시간은 정확한 것이 아니며 상대적인 값입니다)',
       text: '(데이터 없음)',
       timestamp: '2009-05-28T07:46:59Z',
     },
     '2': {
       wikiTitle: titleText,
       contributor: 'Dummy Wiki의 기여자',
+      comment: '(이 판의 편집 시간은 정확한 것이 아니며 상대적인 값입니다)',
       text: '(데이터 없음)',
       timestamp: '2009-05-28T07:46:58Z',
     },
     '1': {
       wikiTitle: titleText,
       contributor: 'Dummy Wiki의 기여자',
+      comment: '(이 판의 편집 시간은 정확한 것이 아니며 상대적인 값입니다)',
       text: '(데이터 없음)',
       timestamp: '2009-05-28T07:46:57Z',
     },

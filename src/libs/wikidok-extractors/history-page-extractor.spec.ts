@@ -159,3 +159,37 @@ test('비건편의점 위키를 열었습니다/History', () => {
     },
   })
 })
+
+describe('extractLatestRevId', () => {
+  test.each([
+    {
+      url: 'http://ko.areumdri.wikidok.net/wp-d/5793c26ce70c5cb308fc0a76/History',
+      tblHistory:
+        '/wp-d/5a76b81102b98d5a61b27c9b@2/View /wp-d/5a76b81102b98d5a61b27c9b@1/View',
+      expected: 2,
+    },
+    {
+      url: 'http://ko.areumdri.wikidok.net/wp-d/5793c26ce70c5cb308fc0a76/History?page=1',
+      tblHistory:
+        '/wp-d/5a76b81102b98d5a61b27c9b@2/View /wp-d/5a76b81102b98d5a61b27c9b@1/View',
+      expected: 2,
+    },
+    {
+      url: 'http://ko.areumdri.wikidok.net/wp-d/5793c26ce70c5cb308fc0a76/History?page=3',
+      tblHistory: '/wp-d/5a76b81102b98d5a61b27c9b@1/View',
+      expected: null,
+    },
+    {
+      url: 'http://ko.areumdri.wikidok.net/wp-d/5793c26ce70c5cb308fc0a76/History',
+      tblHistory: '/wp-d/5a76b81102b98d5a61b27c9b/View',
+      expected: null,
+    },
+  ])('$url', ({ tblHistory, url, expected }) => {
+    expect(
+      Module.extractLatestRevId({
+        tblHistory,
+        url,
+      }),
+    ).toBe(expected)
+  })
+})

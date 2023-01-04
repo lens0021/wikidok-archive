@@ -74,6 +74,9 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
             titleMap[title]!.latestRevision?.wikiTitle,
         )
       }
+      if (titleMap[title]!.latestRevision !== undefined) {
+        throw Error('latestRevision should be null')
+      }
       revisions.push({
         timestamp: {
           '#text': titleMap[title]!.revisions[rev]?.timestamp!,
@@ -102,18 +105,14 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
         },
       })
     }
-    if (
-      revisions.length === 0 ||
-      titleMap[title]!.latestRevision?.wikiTitle === undefined
-    ) {
-      debugger
-      continue
+    if (titleMap[title]!.latestWikiTitle === undefined) {
+      throw Error('latestWikiTitle should be defined: ' + title)
     }
     page.push([
       {
         title:
           `Project:위키독/${siteInfo.sitename}/` +
-          titleMap[title]!.latestRevision?.wikiTitle,
+          titleMap[title]!.latestWikiTitle!,
         revision: revisions,
       },
     ])

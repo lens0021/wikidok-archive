@@ -28,13 +28,25 @@ export function extractRevisionMap(
       timestamp: wikidokToUtc(ts),
       contributor,
     }
-    if (g['comment'] !== undefined) {
-      map[revId]!.comment = decode(g['comment']!)
-    }
+    map[revId]!.comment = g['comment'] !== '' ? decode(g['comment']!) : ''
     const pageTitle = crawled?.wikiTitle
     if (pageTitle !== undefined) {
       map[revId]!.wikiTitle = pageTitle
     }
   }
   return map
+}
+
+export function extractLatestRevId(crawled: CrawledObject) {
+  if (
+    crawled.tblHistory !== undefined &&
+    (crawled.url.endsWith('/History') ||
+      crawled.url.endsWith('/History?page=1'))
+  ) {
+    const match = crawled.tblHistory.match(/wp-d\/[^@]+@(\d+)\//)
+    if (match && match[1] !== undefined) {
+      return parseInt(match[1]!)
+    }
+  }
+  return null
 }

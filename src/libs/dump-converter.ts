@@ -1,5 +1,8 @@
 import { decode } from 'html-entities'
-import { extractRevisionMap } from 'libs/wikidok-extractors/history-page-extractor.ts'
+import {
+  extractLatestRevId,
+  extractRevisionMap,
+} from 'libs/wikidok-extractors/history-page-extractor.ts'
 import * as WikidokUrlParser from 'libs/wikidok-url-parser.ts'
 import { CrawledObject } from 'types/crawled-object.ts'
 import { MwRevision } from 'types/mw-revision.ts'
@@ -46,9 +49,11 @@ export function applyCrawledHistory(
 
     if (titleMap[pageId] === undefined) {
       titleMap[pageId] = {
-        // TODO: There is the exact number on the history page
-        originalRevisionCount: Object.keys(revisionMap).length,
         revisions: revisionMap,
+      }
+      const latestRevId = extractLatestRevId(crawled)
+      if (latestRevId !== null) {
+        titleMap[pageId]!.originalRevisionCount = latestRevId!
       }
     }
     const originRevCnt = titleMap[pageId]!.originalRevisionCount

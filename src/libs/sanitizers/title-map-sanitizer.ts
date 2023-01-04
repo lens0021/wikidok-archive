@@ -35,7 +35,10 @@ export function fillMissingValuesInTitle(
     const latest = title.latestRevision!
     const originRevCnt = title.originalRevisionCount!
     if (originRevCnt) {
-      title.revisions[originRevCnt] = latest
+      title.revisions[originRevCnt] =
+        title.revisions[originRevCnt] === undefined
+          ? latest
+          : mergeRevisions(title.revisions[originRevCnt]!, latest)
     }
   }
 
@@ -60,15 +63,21 @@ export function adjustLatestRevisionInTitleMap(
 
 export function adjustLatestRevisionInTitle(title: MwTitle): MwTitle {
   const latestRev = title.latestRevision
-  const latestIndex: number = Math.max(
-    findLatestRevisionCount(title.revisions),
-    title.originalRevisionCount,
-  )
-  const maybeLatestRev = title.revisions[latestIndex]
+  if (title.originalRevisionCount !== undefined) {
+    const latestIndex: number = Math.max(
+      findLatestRevisionCount(title.revisions),
+      title.originalRevisionCount,
+    )
+    const maybeLatestRev = title.revisions[latestIndex]
+    const merged = mergeRevisions(latestRev, maybeLatestRev)
+    title.revisions[String(latestIndex)] = merged
+    title.latestRevision = merged
+  }
 
-  const merged = mergeRevisions(latestRev, maybeLatestRev)
+  if (title.latestRevision!.wikiTitle) {
+    title.latestWikiTitle = title.latestRevision!.wikiTitle
+  }
+  delete title.latestRevision
 
-  title.revisions[String(latestIndex)] = merged
-  title.latestRevision = merged
   return title
 }

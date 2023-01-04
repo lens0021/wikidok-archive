@@ -6,50 +6,93 @@ const dummySiteInfo = {
   base: '',
 }
 
-test('fillMissingValuesInTitleMap', () => {
-  const titleText = 'dummy'
-  expect(
-    Module.fillMissingValuesInTitleMap(
-      {
+describe('fillMissingValuesInTitleMap', () => {
+  it.each([
+    {
+      msg: 'happy path',
+      title: {
         titleText: {
           originalRevisionCount: 3,
           revisions: {
-            '3': { wikiTitle: titleText, timestamp: '2009-05-28T07:47:00Z' },
-            '2': { wikiTitle: titleText },
-            '1': { wikiTitle: titleText },
+            '3': { wikiTitle: 'dummy', timestamp: '2009-05-28T07:47:00Z' },
+            '2': { wikiTitle: 'dummy', comment: '' },
+            '1': { wikiTitle: 'dummy', comment: '' },
           },
         },
       },
-      dummySiteInfo,
-    ),
-  ).toStrictEqual({
-    titleText: {
-      originalRevisionCount: 3,
-      latestRevision: {
-        wikiTitle: titleText,
-        text: '(데이터 없음)',
-        contributor: 'Dummy Wiki의 기여자',
-        timestamp: '2009-05-28T07:47:00Z',
-      },
-      revisions: {
-        '3': {
-          wikiTitle: titleText,
-          text: '(데이터 없음)',
-          contributor: 'Dummy Wiki의 기여자',
-          timestamp: '2009-05-28T07:47:00Z',
-        },
-        '2': {
-          text: '(데이터 없음)',
-          contributor: 'Dummy Wiki의 기여자',
-          timestamp: '2009-05-28T07:46:59Z',
-        },
-        '1': {
-          text: '(데이터 없음)',
-          contributor: 'Dummy Wiki의 기여자',
-          timestamp: '2009-05-28T07:46:58Z',
+      expected: {
+        titleText: {
+          originalRevisionCount: 3,
+          latestRevision: {
+            wikiTitle: 'dummy',
+            text: '(데이터 없음)',
+            contributor: 'Dummy Wiki의 기여자',
+            timestamp: '2009-05-28T07:47:00Z',
+          },
+          revisions: {
+            '3': {
+              wikiTitle: 'dummy',
+              text: '(데이터 없음)',
+              contributor: 'Dummy Wiki의 기여자',
+              timestamp: '2009-05-28T07:47:00Z',
+            },
+            '2': {
+              wikiTitle: 'dummy',
+              text: '(데이터 없음)',
+              comment:
+                '(이 판의 편집 시간은 정확한 것이 아니며 상대적인 값입니다)',
+              contributor: 'Dummy Wiki의 기여자',
+              timestamp: '2009-05-28T07:46:59Z',
+            },
+            '1': {
+              wikiTitle: 'dummy',
+              text: '(데이터 없음)',
+              comment:
+                '(이 판의 편집 시간은 정확한 것이 아니며 상대적인 값입니다)',
+              contributor: 'Dummy Wiki의 기여자',
+              timestamp: '2009-05-28T07:46:58Z',
+            },
+          },
         },
       },
     },
+    {
+      msg: 'Do not overwrite original',
+      title: {
+        titleText: {
+          originalRevisionCount: 1,
+          latestRevision: {
+            wikiTitle: 'dummy',
+            text: '== Title ==',
+          },
+          revisions: {
+            '1': { timestamp: '2009-05-28T07:47:00Z', contributor: 'foo' },
+          },
+        },
+      },
+      expected: {
+        titleText: {
+          originalRevisionCount: 1,
+          latestRevision: {
+            wikiTitle: 'dummy',
+            text: '== Title ==',
+          },
+          revisions: {
+            '1': {
+              wikiTitle: 'dummy',
+              text: '== Title ==',
+              contributor: 'foo',
+              timestamp: '2009-05-28T07:47:00Z',
+            },
+          },
+        },
+      },
+    },
+  ])('$msg', ({ msg, title, expected }) => {
+    expect(
+      Module.fillMissingValuesInTitleMap(title, dummySiteInfo),
+    ).toStrictEqual(expected)
+    msg
   })
 })
 
@@ -58,12 +101,12 @@ describe('adjustLatestRevisionInTitle', () => {
     {
       msg: 'nothing happens',
       title: {
-        originalRevisionCount: 0,
-        revisions: {},
+        originalRevisionCount: 1,
+        revisions: { '1': {} },
       },
       expected: {
-        originalRevisionCount: 0,
-        revisions: {},
+        originalRevisionCount: 1,
+        revisions: { '1': {} },
       },
     },
     {
@@ -76,7 +119,6 @@ describe('adjustLatestRevisionInTitle', () => {
       expected: {
         originalRevisionCount: 1,
         revisions: { '1': { text: '1' } },
-        latestRevision: { text: '1' },
       },
     },
     {
@@ -88,7 +130,6 @@ describe('adjustLatestRevisionInTitle', () => {
       expected: {
         originalRevisionCount: 1,
         revisions: { '1': { text: '1' } },
-        latestRevision: { text: '1' },
       },
     },
     {
@@ -103,7 +144,6 @@ describe('adjustLatestRevisionInTitle', () => {
         revisions: {
           '1': { timestamp: '11:10', contributor: 'asdf', text: '1' },
         },
-        latestRevision: { timestamp: '11:10', contributor: 'asdf', text: '1' },
       },
     },
   ])('$msg', ({ msg, title, expected }) => {
