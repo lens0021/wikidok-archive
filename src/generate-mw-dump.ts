@@ -1,8 +1,8 @@
 import { default as Args } from 'args'
 import { readdirSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
+import { sanitizeTitleMap } from 'libs/sanitizers/title-map-sanitizer.ts'
 import { groupTitle } from 'libs/title-map-grouper.ts'
-import { fillMissingValuesInTitleMap } from 'libs/title-sanitizer.ts'
 import { extractRevisionMap } from 'libs/wikidok-extractors/history-page-extractor.ts'
 import * as WikidokUrlParser from 'libs/wikidok-url-parser.ts'
 import { CrawledObject } from 'types/crawled-object.ts'
@@ -172,7 +172,7 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
     console.log(duplications)
   }
   const page = []
-  titleMap = fillMissingValuesInTitleMap(titleMap, siteInfo)
+  titleMap = sanitizeTitleMap(titleMap, siteInfo)
   for (const title in titleMap) {
     const revisions = []
     for (const rev in titleMap[title]!.revisions) {
@@ -222,7 +222,6 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
     page.push([
       {
         // TODO: \[\] 같은 특수문자 처리
-        // TODO: 하위문서 처리
         title:
           `Project:위키독/${siteInfo.sitename}/` +
           titleMap[title]!.latestRevision?.wikiTitle,

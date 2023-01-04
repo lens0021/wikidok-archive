@@ -2,8 +2,16 @@ import { MwSiteInfo } from 'types/mw-site-info.ts'
 import { MwTitle, MwTitleMap } from 'types/mw-title.ts'
 import {
   fillMissingRevisions,
-  fillMissingValuesInRevisions,
-} from './revision-sanitizer'
+  sanitizeRevisionMap,
+} from './revision-map-sanitizer'
+
+export function sanitizeTitleMap(
+  titleMap: MwTitleMap,
+  siteInfo: MwSiteInfo,
+): MwTitleMap {
+  titleMap = fillMissingValuesInTitleMap(titleMap, siteInfo)
+  return titleMap
+}
 
 export function fillMissingValuesInTitleMap(
   titleMap: MwTitleMap,
@@ -29,7 +37,7 @@ export function fillMissingValuesInTitle(
   }
 
   title.revisions = fillMissingRevisions(title.revisions, siteInfo)
-  title.revisions = fillMissingValuesInRevisions(title.revisions, siteInfo)
+  title.revisions = sanitizeRevisionMap(title.revisions, siteInfo)
 
   if (!title.latestRevision && title.originalRevisionCount) {
     title.latestRevision = title.revisions[String(title.originalRevisionCount)]!

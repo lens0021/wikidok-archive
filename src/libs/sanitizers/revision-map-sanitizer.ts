@@ -2,6 +2,14 @@ import { omitUnderSecond, oneSecondAgo } from 'libs/date-converter.ts'
 import { MwRevisionMap } from 'types/mw-revision.ts'
 import { MwSiteInfo } from 'types/mw-site-info.ts'
 
+export function sanitizeRevisionMap(
+  revisionMap: MwRevisionMap,
+  siteInfo: MwSiteInfo,
+): MwRevisionMap {
+  revisionMap = fillMissingValuesInRevisions(revisionMap, siteInfo)
+  return revisionMap
+}
+
 export function fillMissingValuesInRevisions(
   revisionMap: MwRevisionMap,
   siteInfo: MwSiteInfo,

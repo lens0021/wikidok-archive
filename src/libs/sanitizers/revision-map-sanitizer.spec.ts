@@ -1,4 +1,4 @@
-import * as Module from 'libs/revision-sanitizer.ts'
+import * as Module from 'libs/sanitizers/revision-map-sanitizer.ts'
 import { MwRevision } from 'types/mw-revision.ts'
 
 const dummySiteInfo = {

@@ -1,4 +1,4 @@
-import * as Module from './title-sanitizer'
+import * as Module from './title-map-sanitizer'
 
 const dummySiteInfo = {
   sitename: 'Dummy Wiki',
