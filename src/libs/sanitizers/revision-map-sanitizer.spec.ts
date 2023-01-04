@@ -26,7 +26,7 @@ test('reversedIter', () => {
 test('fillMissingValuesInRevisions', () => {
   const titleText = 'dummy'
   expect(
-    Module.fillMissingValuesInRevisions(
+    Module.fillMissingValuesInRevisionMap(
       {
         '5': { wikiTitle: titleText, timestamp: '2009-05-28T07:47:01Z' },
         '4': { wikiTitle: titleText },
@@ -72,7 +72,7 @@ test('fillMissingValuesInRevisions', () => {
 
 test('fillMissingValuesInRevisions', () => {
   const titleText = 'dummy'
-  const revs = Module.fillMissingValuesInRevisions(
+  const revs = Module.fillMissingValuesInRevisionMap(
     {
       '3': { wikiTitle: titleText },
       '2': { wikiTitle: titleText },
@@ -112,5 +112,14 @@ describe('findLatestRevisionCount', () => {
     ${{ '2': rev, '1': rev }} | ${2}
   `('$rev', ({ rev, expected }) => {
     expect(Module.findLatestRevisionCount(rev)).toBe(expected)
+  })
+})
+
+describe('escapeSpecialCharacters', () => {
+  it.each`
+    title           | expected
+    ${'[tag]title'} | ${'［tag］title'}
+  `('$title', ({ title, expected }) => {
+    expect(Module.escapeSpecialCharacters(title)).toBe(expected)
   })
 })

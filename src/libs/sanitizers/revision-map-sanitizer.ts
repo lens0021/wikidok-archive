@@ -6,11 +6,12 @@ export function sanitizeRevisionMap(
   revisionMap: MwRevisionMap,
   siteInfo: MwSiteInfo,
 ): MwRevisionMap {
-  revisionMap = fillMissingValuesInRevisions(revisionMap, siteInfo)
+  revisionMap = fillMissingValuesInRevisionMap(revisionMap, siteInfo)
+  revisionMap = escapeSpecialCharactersInRevisionMap(revisionMap)
   return revisionMap
 }
 
-export function fillMissingValuesInRevisions(
+export function fillMissingValuesInRevisionMap(
   revisionMap: MwRevisionMap,
   siteInfo: MwSiteInfo,
 ): MwRevisionMap {
@@ -68,4 +69,29 @@ export function fillMissingRevisions(
 export function findLatestRevisionCount(revs: MwRevisionMap): number {
   const indexes = Object.keys(revs).map((k) => parseInt(k))
   return Math.max(...indexes)
+}
+export function escapeSpecialCharactersInRevisionMap(
+  revisionMap: MwRevisionMap,
+): MwRevisionMap {
+  for (const revId in revisionMap) {
+    if (revisionMap[revId]!.wikiTitle === undefined) {
+      continue
+    }
+    revisionMap[revId]!.wikiTitle = escapeSpecialCharacters(
+      revisionMap[revId]!.wikiTitle!,
+    )
+  }
+  return revisionMap
+}
+
+export function escapeSpecialCharacters(str: string): string {
+  const replaceMap: { [key: string]: string } = {
+    '[': '［',
+    ']': '］',
+  }
+
+  for (const replace in replaceMap) {
+    str = str.replaceAll(replace, replaceMap[replace]!)
+  }
+  return str
 }
