@@ -8,7 +8,7 @@ it.each([
   {
     html: '<a href="https://twitter.com/areumdriwiki">트위터 계정</a>',
     expected:
-      '[https://twitter.com/areumdriwiki 트위터 계정]',
+      '[https://twitter.com/areumdriwiki <nowiki>트위터 계정</nowiki>]',
   },
   {
     // Internal links should not be replaced
@@ -37,12 +37,13 @@ it.each([
   },
   {
     html: '<a href="/wp-d/5a19e16603785b6b64457f72/View">비건</a>',
-    expected: '[[Project:위키독/Dummy/비건|비건]]',
+    expected:
+      '[[Project:위키독/Dummy/비건|<nowiki>비건</nowiki>]]',
   },
   {
     html: '<a href="/wp-d/5a3ce4fe1d6268267ab5020e/View" class="pjax-link" data-mce-href="/wp-d/5a3ce4fe1d6268267ab5020e/View">락틱애시드(젖산)</a>',
     expected:
-      '[[Project:위키독/Dummy/락틱애시드(젖산)|락틱애시드(젖산)]]',
+      '[[Project:위키독/Dummy/락틱애시드(젖산)|<nowiki>락틱애시드(젖산)</nowiki>]]',
   },
 ])('$expected', ({ html, expected }) => {
   expect(

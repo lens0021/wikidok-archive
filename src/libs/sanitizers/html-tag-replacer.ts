@@ -21,7 +21,7 @@ export function replaceHtmlTags(html: string): string {
 
     // external links
     '<a href="(https?:[^"]+)"(?: wk-external="true")?>(?:<span>)?([^<]+)(?:</span>)?</a>':
-      '[$1 $2]',
+      '[$1 <nowiki>$2</nowiki>]',
   }
 
   for (const replace in replaceMap) {
@@ -77,7 +77,9 @@ export function replaceInternalLinks(
       const title = `Project:위키독/${siteInfo.sitename}/${subTitle}`
       html = html.replaceAll(
         match[0],
-        `[[${title}|${match.groups!['text']}]]`,
+        `[[${title}|<nowiki>${
+          match.groups!['text']
+        }</nowiki>]]`,
       )
     }
   }

@@ -265,7 +265,7 @@ it.each([
   {
     html: '<a href="https://twitter.com/areumdriwiki">트위터 계정</a>',
     expected:
-      '[https://twitter.com/areumdriwiki 트위터 계정]',
+      '[https://twitter.com/areumdriwiki <nowiki>트위터 계정</nowiki>]',
   },
   {
     html: '<button data-container=".wiki-fnote" data-placement="auto bottom" data-content="%EC%86%8C%EA%B3%B5%EB%8F%99%2C%20%EC%84%9C%EC%86%8C%EB%AC%B8%EB%A1%9C%2C%20%ED%95%9C%EA%B0%95%EC%A7%84%EC%97%ADR%2C%20%EC%9A%A9%EC%82%B0%EC%97%AD%EC%8D%A8%EB%B0%8BR%2C%20%ED%95%9C%EB%82%A8%EB%8F%99%2C%20%ED%8C%8C%EB%AF%B8%EC%97%90%ED%8C%8C%ED%81%ACR%2C%20%EC%B2%AD%EB%8B%B4%EC%82%AC%EA%B1%B0%EB%A6%AC%2C%20%EC%97%AD%EC%82%BC%EC%97%AD%EC%A0%90.%20%EC%9E%90%EC%84%B8%ED%95%9C%20%EC%84%A4%EB%AA%85%EC%9D%80%20%EC%8A%A4%ED%83%80%EB%B2%85%EC%8A%A4%20%ED%94%84%EB%A6%AC%EB%AF%B8%EC%96%B4%20%ED%91%B8%EB%93%9C%20%EC%84%9C%EB%B9%84%EC%8A%A4%20%EC%8A%A4%ED%86%A0%EC%96%B4%20%EC%9B%B9%ED%8E%98%EC%9D%B4%EC%A7%80(http%3A%2F%2Fwww.istarbucks.co.kr%2Fstore%2Fstore_food.do)%20%EC%B0%B8%EA%B3%A0">3</button>',
