@@ -14,6 +14,7 @@ export function extractRevisionMap(
       `<td class=\\"td-m text-left\\">(?<comment>[^<]*)<\\/td>`,
     'g',
   )
+  html = html.replaceAll(/[\r\n\t]/g, '')
   const matches = html.matchAll(rexRow)
   const map: MwRevisionMap = {}
   for (const match of matches) {

@@ -104,6 +104,7 @@ export function escapeSpecialCharacters(str: string): string {
   const replaceMap: { [key: string]: string } = {
     '[': '［',
     ']': '］',
+    '#': '＃',
   }
 
   for (const replace in replaceMap) {
