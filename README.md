@@ -22,7 +22,7 @@ TBD
 
 mw-dump 디렉토리의 xml 파일을 미디어위키의 [ImportDump.php] 스크립트나 Special:Import 특수 문서로 불러올 수 있습니다.
 
-일반 이름 공간에 불러올 경우 `Project:위키독 보존 프로젝트/<위키 이름>/<문서 이름>`으로 위치합니다.
+일반 이름 공간에 불러올 경우 `Project:위키독 보존 프로젝트/<위키 이름>/문서/<문서 이름>`으로 위치합니다.
 
 ##### ImportDump.php
 
@@ -38,9 +38,12 @@ docker cp mw-dump/areumdri-0.xml $(docker ps -qf 'name=fastcgi'):/root
 
 # Import
 # 정확한 미디어위키의 위치는 사용하는 도커 이미지의 README를 참고하십시오.
-docker exec $(docker ps -qf 'name=fastcgi') php maintenance/importDump.php --username-prefix='veganism' /root/veganism-0.xml
-docker exec $(docker ps -qf 'name=fastcgi') php maintenance/importDump.php --username-prefix='womwiki0308' /root/womwiki0308-0.xml
-docker exec $(docker ps -qf 'name=fastcgi') php maintenance/importDump.php --username-prefix='areumdri' /root/areumdri-0.xml
+php maintenance/importDump.php --username-prefix='womwiki0308' /a/womwiki0308-0.xml
+php maintenance/importDump.php --username-prefix='areumdri' /a/areumdri-0.xml
+sudo -u www-data php maintenance/rebuildrecentchanges.php
+php maintenance/initSiteStats.php
+
+php maintenance/importDump.php --**username**-prefix='veganism' /a/veganism-0.xml
 
 # You might want to run [rebuildrecentchanges.php] to regenerate RecentChanges, and [initSiteStats.php] to update page and revision counts
 docker exec $(docker ps -qf 'name=fastcgi') php maintenance/rebuildrecentchanges.php
