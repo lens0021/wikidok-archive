@@ -15,7 +15,8 @@ export function replaceHtmlTags(html: string): string {
     ' data-mce-href="[^"]+"': '',
 
     // img
-    ' style="display: block; margin-left: auto; margin-right: auto;"': '',
+    ' style="display: block; margin-left: auto; margin-right: auto;"':
+      '',
     'width="d+" height="d+"': '',
 
     // external links
@@ -24,12 +25,18 @@ export function replaceHtmlTags(html: string): string {
   }
 
   for (const replace in replaceMap) {
-    html = html.replaceAll(new RegExp(replace, 'g'), replaceMap[replace]!)
+    html = html.replaceAll(
+      new RegExp(replace, 'g'),
+      replaceMap[replace]!,
+    )
   }
 
   const refs = [
     ...html.matchAll(
-      new RegExp('<button.+data-content="([^"]+)">\\d+</button>', 'g'),
+      new RegExp(
+        '<button.+data-content="([^"]+)">\\d+</button>',
+        'g',
+      ),
     ),
   ]
   for (const ref of refs) {
@@ -60,12 +67,18 @@ export function replaceInternalLinks(
   const matches = [...html.matchAll(regex)]
   for (const match of matches) {
     const pageId = match.groups!['pageId']!
-    if (titleMap[pageId]?.latestRevision?.wikiTitle !== undefined) {
+    if (
+      titleMap[pageId]?.latestRevision?.wikiTitle !==
+      undefined
+    ) {
       const subTitle = escapeSpecialCharacters(
         titleMap[pageId]!.latestRevision!.wikiTitle!,
       )
       const title = `Project:위키독/${siteInfo.sitename}/${subTitle}`
-      html = html.replaceAll(match[0], `[[${title}|${match.groups!['text']}]]`)
+      html = html.replaceAll(
+        match[0],
+        `[[${title}|${match.groups!['text']}]]`,
+      )
     }
   }
 

@@ -8,7 +8,9 @@ import { CrawledObject } from 'types/crawled-object.ts'
 import { MwRevision } from 'types/mw-revision.ts'
 import { MwTitleMap } from 'types/mw-title.ts'
 
-export function createTitleDump(crawledObjs: CrawledObject[]): MwTitleMap {
+export function createTitleDump(
+  crawledObjs: CrawledObject[],
+): MwTitleMap {
   let titles: MwTitleMap = {}
   for (const crawled of crawledObjs) {
     if (!crawled.wikiTitle) {
@@ -21,7 +23,10 @@ export function createTitleDump(crawledObjs: CrawledObject[]): MwTitleMap {
   return titles
 }
 
-export function applyCrawledPage(crawled: CrawledObject, titleMap: MwTitleMap) {
+export function applyCrawledPage(
+  crawled: CrawledObject,
+  titleMap: MwTitleMap,
+) {
   titleMap = applyCrawledHistory(crawled, titleMap)
   titleMap = applyCrawledRevision(crawled, titleMap)
   return titleMap
@@ -43,7 +48,10 @@ export function applyCrawledHistory(
     return titleMap
   }
 
-  const revisionMap = extractRevisionMap(crawled.tblHistory, crawled)
+  const revisionMap = extractRevisionMap(
+    crawled.tblHistory,
+    crawled,
+  )
   for (const strRevId in revisionMap) {
     const numRevId = parseInt(strRevId)
 
@@ -51,17 +59,24 @@ export function applyCrawledHistory(
       titleMap[pageId] = {
         revisions: revisionMap,
       }
-      const originalId = WikidokUrlParser.pageId(crawled.url)
+      const originalId = WikidokUrlParser.pageId(
+        crawled.url,
+      )
       if (originalId !== null) {
         titleMap[pageId]!.originalId = originalId
       }
       const latestRevId = extractLatestRevId(crawled)
       if (latestRevId !== null) {
-        titleMap[pageId]!.originalRevisionCount = latestRevId!
+        titleMap[pageId]!.originalRevisionCount =
+          latestRevId!
       }
     }
-    const originRevCnt = titleMap[pageId]!.originalRevisionCount
-    if (originRevCnt !== undefined && originRevCnt < numRevId) {
+    const originRevCnt =
+      titleMap[pageId]!.originalRevisionCount
+    if (
+      originRevCnt !== undefined &&
+      originRevCnt < numRevId
+    ) {
       titleMap[pageId]!.originalRevisionCount = numRevId
     }
 
@@ -82,7 +97,9 @@ export function applyCrawledRevision(
   const pageId = WikidokUrlParser.pageId(crawled.url),
     revId = WikidokUrlParser.revisionId(crawled.url)
   if (pageId === null) {
-    console.warn('Failed to extract data from url:' + crawled.url)
+    console.warn(
+      'Failed to extract data from url:' + crawled.url,
+    )
     return titles
   }
 
@@ -100,10 +117,16 @@ export function applyCrawledRevision(
     }
   }
 
-  if (revId === null && titles[pageId]!.latestRevision === undefined) {
+  if (
+    revId === null &&
+    titles[pageId]!.latestRevision === undefined
+  ) {
     // assume this is the latest revision
     titles[pageId]!.latestRevision = rev
-  } else if (revId !== null && titles[pageId]!.revisions[revId] === undefined) {
+  } else if (
+    revId !== null &&
+    titles[pageId]!.revisions[revId] === undefined
+  ) {
     titles[pageId]!.revisions[revId.toString()] = rev
   }
 

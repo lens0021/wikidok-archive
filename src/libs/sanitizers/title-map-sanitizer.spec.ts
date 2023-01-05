@@ -14,7 +14,10 @@ describe('fillMissingValuesInTitleMap', () => {
         titleText: {
           originalRevisionCount: 3,
           revisions: {
-            '3': { wikiTitle: 'dummy', timestamp: '2009-05-28T07:47:00Z' },
+            '3': {
+              wikiTitle: 'dummy',
+              timestamp: '2009-05-28T07:47:00Z',
+            },
             '2': { wikiTitle: 'dummy', comment: '' },
             '1': { wikiTitle: 'dummy', comment: '' },
           },
@@ -66,7 +69,10 @@ describe('fillMissingValuesInTitleMap', () => {
             text: '== Title ==',
           },
           revisions: {
-            '1': { timestamp: '2009-05-28T07:47:00Z', contributor: 'foo' },
+            '1': {
+              timestamp: '2009-05-28T07:47:00Z',
+              contributor: 'foo',
+            },
           },
         },
       },
@@ -90,7 +96,10 @@ describe('fillMissingValuesInTitleMap', () => {
     },
   ])('$msg', ({ msg, title, expected }) => {
     expect(
-      Module.fillMissingValuesInTitleMap(title, dummySiteInfo),
+      Module.fillMissingValuesInTitleMap(
+        title,
+        dummySiteInfo,
+      ),
     ).toStrictEqual(expected)
     msg
   })
@@ -136,13 +145,19 @@ describe('adjustLatestRevisionInTitle', () => {
       msg: 'contributor',
       title: {
         originalRevisionCount: 1,
-        revisions: { '1': { timestamp: '11:10', contributor: 'asdf' } },
+        revisions: {
+          '1': { timestamp: '11:10', contributor: 'asdf' },
+        },
         latestRevision: { text: '1' },
       },
       expected: {
         originalRevisionCount: 1,
         revisions: {
-          '1': { timestamp: '11:10', contributor: 'asdf', text: '1' },
+          '1': {
+            timestamp: '11:10',
+            contributor: 'asdf',
+            text: '1',
+          },
         },
       },
     },

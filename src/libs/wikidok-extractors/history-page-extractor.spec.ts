@@ -69,12 +69,15 @@ describe('rows', () => {
         '5': {
           timestamp: '2018-03-30T14:07:00Z',
           contributor: 'asdf',
-          comment: '로고 이미지 업데이트, 팀원 항목 추가 서술',
+          comment:
+            '로고 이미지 업데이트, 팀원 항목 추가 서술',
         },
       },
     },
   ])('$msg', ({ msg, raw, expected }) => {
-    expect(Module.extractRevisionMap(raw)).toStrictEqual(expected)
+    expect(Module.extractRevisionMap(raw)).toStrictEqual(
+      expected,
+    )
     msg
   })
 })

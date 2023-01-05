@@ -1,8 +1,14 @@
 import { oneSecondAgo } from 'libs/date-converter.ts'
-import { MwRevision, MwRevisionMap } from 'types/mw-revision.ts'
+import {
+  MwRevision,
+  MwRevisionMap,
+} from 'types/mw-revision.ts'
 import { MwSiteInfo } from 'types/mw-site-info.ts'
 import { MwTitle, MwTitleMap } from 'types/mw-title.ts'
-import { replaceHtmlTags, replaceInternalLinks } from './html-tag-replacer'
+import {
+  replaceHtmlTags,
+  replaceInternalLinks,
+} from './html-tag-replacer'
 
 export function sanitizeRevisionMap(
   revisionMap: MwRevisionMap,
@@ -10,9 +16,18 @@ export function sanitizeRevisionMap(
   titleMap: MwTitleMap,
   siteInfo: MwSiteInfo,
 ): MwRevisionMap {
-  revisionMap = fillMissingValuesInRevisionMap(revisionMap, title, siteInfo)
-  revisionMap = escapeSpecialCharactersInRevisionMap(revisionMap)
-  revisionMap = removeHtmlTagsInRevisionMap(revisionMap, titleMap, siteInfo)
+  revisionMap = fillMissingValuesInRevisionMap(
+    revisionMap,
+    title,
+    siteInfo,
+  )
+  revisionMap =
+    escapeSpecialCharactersInRevisionMap(revisionMap)
+  revisionMap = removeHtmlTagsInRevisionMap(
+    revisionMap,
+    titleMap,
+    siteInfo,
+  )
   return revisionMap
 }
 
@@ -24,10 +39,14 @@ export function fillMissingValuesInRevisionMap(
   let latestTimestamp: string | null = null
   for (const revId of reversedIter(revisionMap)) {
     if (revisionMap[revId]!.contributor === undefined) {
-      revisionMap[revId]!.contributor = siteInfo.sitename + '의 기여자'
-    } else if (revisionMap[revId]!.contributor! === 'admin') {
+      revisionMap[revId]!.contributor =
+        siteInfo.sitename + '의 기여자'
+    } else if (
+      revisionMap[revId]!.contributor! === 'admin'
+    ) {
       // @todo this is not filling
-      revisionMap[revId]!.contributor = siteInfo.sitename + '의 Admin'
+      revisionMap[revId]!.contributor =
+        siteInfo.sitename + '의 Admin'
     }
     if (revisionMap[revId]!.text === undefined) {
       if (title.originalId !== undefined) {
@@ -44,13 +63,18 @@ export function fillMissingValuesInRevisionMap(
       revisionMap[revId]!.timestamp === undefined
     ) {
       throw new Error(
-        'Cannot assume the timestamp of ' + title.originalId + '@' + revId,
+        'Cannot assume the timestamp of ' +
+          title.originalId +
+          '@' +
+          revId,
       )
     }
 
     if (latestTimestamp === null) {
       latestTimestamp = revisionMap[revId]!.timestamp!
-    } else if (revisionMap[revId]!.timestamp === undefined) {
+    } else if (
+      revisionMap[revId]!.timestamp === undefined
+    ) {
       const ago = oneSecondAgo(latestTimestamp)
       revisionMap[revId]!.timestamp = ago
       latestTimestamp = ago
@@ -79,12 +103,18 @@ export function appendComment(
   return revision
 }
 
-export function reversedIter(revisions: MwRevisionMap): string[] {
-  const numericKeys = Object.keys(revisions).map((el) => parseInt(el))
+export function reversedIter(
+  revisions: MwRevisionMap,
+): string[] {
+  const numericKeys = Object.keys(revisions).map((el) =>
+    parseInt(el),
+  )
   numericKeys.sort((a, b) => {
     return a - b
   })
-  const reversedKeys = numericKeys.reverse().map((el) => String(el))
+  const reversedKeys = numericKeys
+    .reverse()
+    .map((el) => String(el))
   return reversedKeys
   //(24) ['9', '8', '7', '6', '5', '4', '3', '24', '23', '22', '21', '20', '2', '19', '18', '17', '16', '15', '14', '13', '12', '11', '10', '1']
 }
@@ -102,7 +132,9 @@ export function fillMissingRevisions(
   return revisions
 }
 
-export function findLatestRevisionCount(revs: MwRevisionMap): number {
+export function findLatestRevisionCount(
+  revs: MwRevisionMap,
+): number {
   const indexes = Object.keys(revs).map((k) => parseInt(k))
   return Math.max(...indexes)
 }
@@ -120,7 +152,9 @@ export function escapeSpecialCharactersInRevisionMap(
   return revisionMap
 }
 
-export function escapeSpecialCharacters(str: string): string {
+export function escapeSpecialCharacters(
+  str: string,
+): string {
   const replaceMap: { [key: string]: string } = {
     '[': '［',
     ']': '］',
@@ -147,7 +181,9 @@ export function removeHtmlTagsInRevisionMap(
       titleMap,
       siteInfo,
     )
-    revisionMap[revId]!.text = replaceHtmlTags(revisionMap[revId]!.text!)
+    revisionMap[revId]!.text = replaceHtmlTags(
+      revisionMap[revId]!.text!,
+    )
   }
   return revisionMap
 }

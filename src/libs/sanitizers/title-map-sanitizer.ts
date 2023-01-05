@@ -43,11 +43,17 @@ export function fillMissingValuesInTitle(
       title.revisions[originRevCnt] =
         title.revisions[originRevCnt] === undefined
           ? latest
-          : mergeRevisions(title.revisions[originRevCnt]!, latest)
+          : mergeRevisions(
+              title.revisions[originRevCnt]!,
+              latest,
+            )
     }
   }
 
-  title.revisions = fillMissingRevisions(title.revisions, siteInfo)
+  title.revisions = fillMissingRevisions(
+    title.revisions,
+    siteInfo,
+  )
   title.revisions = sanitizeRevisionMap(
     title.revisions,
     title,
@@ -55,8 +61,12 @@ export function fillMissingValuesInTitle(
     siteInfo,
   )
 
-  if (!title.latestRevision && title.originalRevisionCount) {
-    title.latestRevision = title.revisions[String(title.originalRevisionCount)]!
+  if (
+    !title.latestRevision &&
+    title.originalRevisionCount
+  ) {
+    title.latestRevision =
+      title.revisions[String(title.originalRevisionCount)]!
   }
 
   return title
@@ -66,12 +76,16 @@ export function adjustLatestRevisionInTitleMap(
   titleMap: MwTitleMap,
 ): MwTitleMap {
   for (const title in titleMap) {
-    titleMap[title] = adjustLatestRevisionInTitle(titleMap[title]!)
+    titleMap[title] = adjustLatestRevisionInTitle(
+      titleMap[title]!,
+    )
   }
   return titleMap
 }
 
-export function adjustLatestRevisionInTitle(title: MwTitle): MwTitle {
+export function adjustLatestRevisionInTitle(
+  title: MwTitle,
+): MwTitle {
   const latestRev = title.latestRevision
   if (title.originalRevisionCount !== undefined) {
     const latestIndex: number = Math.max(

@@ -39,7 +39,9 @@ describe('groupTitle', () => {
   })
 
   test('default window', () => {
-    expect(Module.groupTitle(titles1)).toStrictEqual([titles1])
+    expect(Module.groupTitle(titles1)).toStrictEqual([
+      titles1,
+    ])
   })
 
   test('complex', () => {

@@ -7,7 +7,10 @@ import { groupTitle } from 'libs/title-map-grouper.ts'
 import { CrawledObject } from 'types/crawled-object.ts'
 import { MwSiteInfo } from 'types/mw-site-info.ts'
 import { MwTitleMap } from 'types/mw-title.ts'
-import { siteInfoFor as siteInfoOf, WdSite } from 'types/wd-site.ts'
+import {
+  siteInfoFor as siteInfoOf,
+  WdSite,
+} from 'types/wd-site.ts'
 import xmlbuilder from 'xmlbuilder'
 
 async function main() {
@@ -34,7 +37,9 @@ async function main() {
       titleMap = sanitizeTitleMap(titleMap, siteInfo)
     }
     const mwDumpObj = generateMwDump(titleMap, siteInfo)
-    const xml = xmlbuilder.create(mwDumpObj).end({ pretty: true })
+    const xml = xmlbuilder
+      .create(mwDumpObj)
+      .end({ pretty: true })
     await saveToFile(xml, wiki, i)
   }
   console.log('Done')
@@ -49,10 +54,15 @@ async function main() {
 async function readCrawled(
   wiki: string | null = null,
 ): Promise<CrawledObject[]> {
-  const paths = await readdirSync(`storage/datasets/${wiki}`)
+  const paths = await readdirSync(
+    `storage/datasets/${wiki}`,
+  )
   const crawledObjs = []
   for (const path of paths) {
-    const file = await readFile(`storage/datasets/${wiki}/${path}`, 'utf8')
+    const file = await readFile(
+      `storage/datasets/${wiki}/${path}`,
+      'utf8',
+    )
     const crawledObj = JSON.parse(file) as CrawledObject
     crawledObj.filename = path
     crawledObjs.push(crawledObj)
@@ -60,16 +70,25 @@ async function readCrawled(
   return crawledObjs
 }
 
-function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
+function generateMwDump(
+  titleMap: MwTitleMap,
+  siteInfo: MwSiteInfo,
+) {
   const page = []
 
   for (const title in titleMap) {
     const revisions = []
     for (const rev in titleMap[title]!.revisions) {
-      if (titleMap[title]!.revisions[rev]!.timestamp === undefined) {
+      if (
+        titleMap[title]!.revisions[rev]!.timestamp ===
+        undefined
+      ) {
         throw Error('timestamp is null for ' + title)
       }
-      if (titleMap[title]!.revisions[rev]!.contributor === undefined) {
+      if (
+        titleMap[title]!.revisions[rev]!.contributor ===
+        undefined
+      ) {
         throw Error(
           'contributor is null for ' +
             titleMap[title]!.latestRevision?.wikiTitle,
@@ -80,11 +99,13 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
       }
       revisions.push({
         timestamp: {
-          '#text': titleMap[title]!.revisions[rev]?.timestamp!,
+          '#text':
+            titleMap[title]!.revisions[rev]?.timestamp!,
         },
         contributor: {
           username: {
-            '#text': titleMap[title]!.revisions[rev]?.contributor,
+            '#text':
+              titleMap[title]!.revisions[rev]?.contributor,
           },
         },
         comment: {
@@ -103,7 +124,9 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
       })
     }
     if (titleMap[title]!.latestWikiTitle === undefined) {
-      throw Error('latestWikiTitle should be defined: ' + title)
+      throw Error(
+        'latestWikiTitle should be defined: ' + title,
+      )
     }
     page.push([
       {
@@ -117,7 +140,8 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
   const xmlObjDump = {
     mediawiki: {
       '@xmlns': 'http://www.mediawiki.org/xml/export-0.10/',
-      '@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+      '@xmlns:xsi':
+        'http://www.w3.org/2001/XMLSchema-instance',
       '@xsi:schemaLocation':
         'http://www.mediawiki.org/xml/export-0.10/ http://www.mediawiki.org/xml/export-0.10.xsd',
       '@version': '0.10',
@@ -134,7 +158,8 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
           '#text': `http://ko.${siteInfo.dbname}.wikidok.net`,
         },
         generator: {
-          '#text': 'https://gitlab.com/lens0021/wikidok-archive',
+          '#text':
+            'https://gitlab.com/lens0021/wikidok-archive',
         },
       },
 
@@ -144,7 +169,11 @@ function generateMwDump(titleMap: MwTitleMap, siteInfo: MwSiteInfo) {
   return xmlObjDump
 }
 
-async function saveToFile(xml: string, wiki: WdSite, step: number) {
+async function saveToFile(
+  xml: string,
+  wiki: WdSite,
+  step: number,
+) {
   const file = `./mw-dump/${wiki}-${step}.xml`
   await writeFile(file, xml)
 }

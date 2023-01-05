@@ -1,11 +1,18 @@
-import { CheerioCrawler, Dataset, log, RequestQueue } from 'crawlee'
+import {
+  CheerioCrawler,
+  Dataset,
+  log,
+  RequestQueue,
+} from 'crawlee'
 import { exit } from 'process'
 import { CrawledObject as Data } from 'types/crawled-object.ts'
 
 const TIME_IS_OVER = true
 
 if (TIME_IS_OVER) {
-  console.log('위키독 서비스가 종료되었으며 크롤링은 불가합니다.')
+  console.log(
+    '위키독 서비스가 종료되었으며 크롤링은 불가합니다.',
+  )
   exit(1)
 }
 
@@ -20,7 +27,9 @@ function extractId(url: string) {
 
 function extractOldid(url: string) {
   // http://ko.areumdri.wikidok.net/wp-d/5793c26ce70c5cb308fc0a76@14/View
-  const m = url.match(/ko\.[^\.]+\.wikidok\.net\/wp-[cd]\/.+@(\d+)\/View$/)
+  const m = url.match(
+    /ko\.[^\.]+\.wikidok\.net\/wp-[cd]\/.+@(\d+)\/View$/,
+  )
 
   if (m && m[1]) {
     return parseInt(m[1])
@@ -118,8 +127,13 @@ const crawler = new CheerioCrawler({
 
     const oldid = extractOldid(request.url)
     if (oldid !== null) {
-      for (const olderId of [...Array(oldid).keys()].slice(1)) {
-        const url = request.url.replace(/@\d+\//, `@${olderId}/`)
+      for (const olderId of [...Array(oldid).keys()].slice(
+        1,
+      )) {
+        const url = request.url.replace(
+          /@\d+\//,
+          `@${olderId}/`,
+        )
         await queue.addRequest({ url })
       }
     }
