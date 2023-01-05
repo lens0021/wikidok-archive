@@ -39,20 +39,18 @@ export function fillMissingValuesInRevisionMap(
       }
     }
 
-    if (latestTimestamp === null) {
-      if (revisionMap[revId]!.timestamp !== undefined) {
-        latestTimestamp = revisionMap[revId]!.timestamp!
-      } else {
-        latestTimestamp = new Date().toISOString()
-        revisionMap[revId]!.timestamp = latestTimestamp
-        revisionMap[revId]! = appendComment(
-          '(이 판의 편집 시간은 정확한 것이 아니며 상대적인 값입니다)',
-          revisionMap[revId]!,
-        )
-      }
-      continue
+    if (
+      latestTimestamp === null &&
+      revisionMap[revId]!.timestamp === undefined
+    ) {
+      throw new Error(
+        'Cannot assume the timestamp of ' + title.originalId + '@' + revId,
+      )
     }
-    if (revisionMap[revId]!.timestamp === undefined) {
+
+    if (latestTimestamp === null) {
+      latestTimestamp = revisionMap[revId]!.timestamp!
+    } else if (revisionMap[revId]!.timestamp === undefined) {
       const ago = oneSecondAgo(latestTimestamp)
       revisionMap[revId]!.timestamp = ago
       latestTimestamp = ago
@@ -83,9 +81,12 @@ export function appendComment(
 
 export function reversedIter(revisions: MwRevisionMap): string[] {
   const numericKeys = Object.keys(revisions).map((el) => parseInt(el))
-  numericKeys.sort()
-  const reversedNumericKeys = numericKeys.reverse().map((el) => String(el))
-  return reversedNumericKeys
+  numericKeys.sort((a, b) => {
+    return a - b
+  })
+  const reversedKeys = numericKeys.reverse().map((el) => String(el))
+  return reversedKeys
+  //(24) ['9', '8', '7', '6', '5', '4', '3', '24', '23', '22', '21', '20', '2', '19', '18', '17', '16', '15', '14', '13', '12', '11', '10', '1']
 }
 
 export function fillMissingRevisions(

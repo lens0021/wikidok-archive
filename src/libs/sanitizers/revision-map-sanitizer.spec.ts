@@ -1,6 +1,6 @@
 import * as replaceHtmlTags from 'libs/sanitizers/html-tag-replacer.ts'
 import * as Module from 'libs/sanitizers/revision-map-sanitizer.ts'
-import { MwRevision } from 'types/mw-revision.ts'
+import { MwRevision, MwRevisionMap } from 'types/mw-revision.ts'
 
 const dummySiteInfo = {
   sitename: 'Dummy Wiki',
@@ -8,20 +8,39 @@ const dummySiteInfo = {
   base: '',
 }
 
-test('reversedIter', () => {
+describe('reversedIter', () => {
   function newRevisionId(title: string | number) {
     title = String(title)
     return { wikiTitle: title }
   }
-  expect(
-    Module.reversedIter({
-      '1': newRevisionId(1),
-      '2': newRevisionId(2),
-      '3': newRevisionId(3),
-      '4': newRevisionId(4),
-      '5': newRevisionId(5),
-    }),
-  ).toStrictEqual(['5', '4', '3', '2', '1'])
+  const oneToTwentyTwo: MwRevisionMap = {}
+  for (const i of [...Array(24).keys()].map((el) => el + 1)) {
+    oneToTwentyTwo[i] = newRevisionId(i)
+  }
+  it.each([
+    {
+      msg: 'one to twenty two',
+      revisions: oneToTwentyTwo,
+      expected: [...Array(24).keys()]
+        .map((el) => el + 1)
+        .reverse()
+        .map((el) => String(el)),
+    },
+    {
+      msg: '',
+      revisions: {
+        '1': newRevisionId(1),
+        '2': newRevisionId(2),
+        '3': newRevisionId(3),
+        '4': newRevisionId(4),
+        '5': newRevisionId(5),
+      },
+      expected: ['5', '4', '3', '2', '1'],
+    },
+  ])('msg', ({ msg, revisions, expected }) => {
+    expect(Module.reversedIter(revisions)).toStrictEqual(expected)
+    msg
+  })
 })
 
 test('fillMissingValuesInRevisions', () => {
@@ -124,7 +143,7 @@ test('fillMissingValuesInRevisions', () => {
   const titleText = 'dummy'
   const revs = Module.fillMissingValuesInRevisionMap(
     {
-      '3': { wikiTitle: titleText },
+      '3': { wikiTitle: titleText, timestamp: '2009-05-28T07:47:01Z' },
       '2': { wikiTitle: titleText },
       '1': { wikiTitle: titleText },
     },
