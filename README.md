@@ -41,9 +41,12 @@ docker cp mw-dump/areumdri-0.xml $(docker ps -qf 'name=fastcgi'):/root
 docker exec $(docker ps -qf 'name=fastcgi') php maintenance/importDump.php --username-prefix='veganism' /root/veganism-0.xml
 docker exec $(docker ps -qf 'name=fastcgi') php maintenance/importDump.php --username-prefix='womwiki0308' /root/womwiki0308-0.xml
 docker exec $(docker ps -qf 'name=fastcgi') php maintenance/importDump.php --username-prefix='areumdri' /root/areumdri-0.xml
+
+# You might want to run [rebuildrecentchanges.php] to regenerate RecentChanges, and [initSiteStats.php] to update page and revision counts
+docker exec $(docker ps -qf 'name=fastcgi') php maintenance/rebuildrecentchanges.php
+docker exec $(docker ps -qf 'name=fastcgi') php maintenance/initSiteStats.php
 ```
 
-You might want to run [rebuildrecentchanges.php] to regenerate RecentChanges, and [initSiteStats.php] to update page and revision counts
 
 ##### Special:Import
 
