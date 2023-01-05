@@ -47,7 +47,6 @@ docker exec $(docker ps -qf 'name=fastcgi') php maintenance/rebuildrecentchanges
 docker exec $(docker ps -qf 'name=fastcgi') php maintenance/initSiteStats.php
 ```
 
-
 ##### Special:Import
 
 PHP 설정 상 파일 업로드 크기 제한이 있는지 살피십시오. 실패하는 경우 xml 파일을 작은 크기로 쪼개야 할 수 있습니다.
