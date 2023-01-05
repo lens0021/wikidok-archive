@@ -48,7 +48,12 @@ export function fillMissingValuesInTitle(
   }
 
   title.revisions = fillMissingRevisions(title.revisions, siteInfo)
-  title.revisions = sanitizeRevisionMap(title.revisions, titleMap, siteInfo)
+  title.revisions = sanitizeRevisionMap(
+    title.revisions,
+    title,
+    titleMap,
+    siteInfo,
+  )
 
   if (!title.latestRevision && title.originalRevisionCount) {
     title.latestRevision = title.revisions[String(title.originalRevisionCount)]!

@@ -38,41 +38,45 @@ test('fillMissingValuesInRevisions', () => {
         '2': { wikiTitle: titleText, comment: '' },
         '1': { wikiTitle: titleText, comment: '' },
       },
+      {
+        originalId: 'loremipsum',
+        revisions: {},
+      },
       dummySiteInfo,
     ),
   ).toStrictEqual({
     '5': {
       wikiTitle: titleText,
       contributor: 'Dummy Wiki의 기여자',
-      text: '(데이터 없음)',
+      text: '(데이터 없음, 원본: [http://ko.dummy.net/wp-d/loremipsum@5/View http://ko.dummy.net/wp-d/loremipsum@5/View])',
       timestamp: '2009-05-28T07:47:01Z',
     },
     '4': {
       wikiTitle: titleText,
       contributor: 'Dummy Wiki의 기여자',
       comment: '(이 판의 편집 시간은 정확한 것이 아니며 상대적인 값입니다)',
-      text: '(데이터 없음)',
+      text: '(데이터 없음, 원본: [http://ko.dummy.net/wp-d/loremipsum@4/View http://ko.dummy.net/wp-d/loremipsum@4/View])',
       timestamp: '2009-05-28T07:47:00Z',
     },
     '3': {
       wikiTitle: titleText,
       contributor: 'Dummy Wiki의 기여자',
       comment: '(이 판의 편집 시간은 정확한 것이 아니며 상대적인 값입니다)',
-      text: '(데이터 없음)',
+      text: '(데이터 없음, 원본: [http://ko.dummy.net/wp-d/loremipsum@3/View http://ko.dummy.net/wp-d/loremipsum@3/View])',
       timestamp: '2009-05-28T07:46:59Z',
     },
     '2': {
       wikiTitle: titleText,
       contributor: 'Dummy Wiki의 기여자',
       comment: '(이 판의 편집 시간은 정확한 것이 아니며 상대적인 값입니다)',
-      text: '(데이터 없음)',
+      text: '(데이터 없음, 원본: [http://ko.dummy.net/wp-d/loremipsum@2/View http://ko.dummy.net/wp-d/loremipsum@2/View])',
       timestamp: '2009-05-28T07:46:58Z',
     },
     '1': {
       wikiTitle: titleText,
       contributor: 'Dummy Wiki의 기여자',
       comment: '(이 판의 편집 시간은 정확한 것이 아니며 상대적인 값입니다)',
-      text: '(데이터 없음)',
+      text: '(데이터 없음, 원본: [http://ko.dummy.net/wp-d/loremipsum@1/View http://ko.dummy.net/wp-d/loremipsum@1/View])',
       timestamp: '2009-05-28T07:46:57Z',
     },
   })
@@ -94,19 +98,23 @@ test('fillMissingValuesInRevisions', () => {
           contributor: 'Foo',
         },
       },
+      {
+        originalId: 'loremipsum',
+        revisions: {},
+      },
       dummySiteInfo,
     ),
   ).toStrictEqual({
     '2': {
       wikiTitle: titleText,
       contributor: 'Foo',
-      text: '(데이터 없음)',
+      text: '(데이터 없음, 원본: [http://ko.dummy.net/wp-d/loremipsum@2/View http://ko.dummy.net/wp-d/loremipsum@2/View])',
       timestamp: '2009-05-28T07:47:01Z',
     },
     '1': {
       wikiTitle: titleText,
       contributor: 'Foo',
-      text: '(데이터 없음)',
+      text: '(데이터 없음, 원본: [http://ko.dummy.net/wp-d/loremipsum@1/View http://ko.dummy.net/wp-d/loremipsum@1/View])',
       timestamp: '2009-05-28T07:47:01Z',
     },
   })
@@ -119,6 +127,10 @@ test('fillMissingValuesInRevisions', () => {
       '3': { wikiTitle: titleText },
       '2': { wikiTitle: titleText },
       '1': { wikiTitle: titleText },
+    },
+    {
+      originalId: 'loremipsum',
+      revisions: {},
     },
     dummySiteInfo,
   )
@@ -186,8 +198,8 @@ describe('escapeSpecialCharacters', () => {
 
 it.each([
   {
-    html: '<tbody></tbody>',
-    expected: '',
+    html: 'tbody<tbody></tbody>',
+    expected: 'tbody',
   },
   {
     html: '<a href="https://twitter.com/areumdriwiki">트위터 계정</a>',

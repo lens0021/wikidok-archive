@@ -11,7 +11,7 @@ import { siteInfoFor as siteInfoOf, WdSite } from 'types/wd-site.ts'
 import xmlbuilder from 'xmlbuilder'
 
 async function main() {
-  Args.option('wiki', 'The wiki to process', 'veganism')
+  Args.option('wiki', 'The wiki to process', 'areumdri')
   Args.option('group', 'export as multiple files', false)
   Args.option('sanitize', '', true)
   const args = Args.parse(process.argv)

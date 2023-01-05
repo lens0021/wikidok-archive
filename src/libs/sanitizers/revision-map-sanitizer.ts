@@ -1,15 +1,16 @@
 import { oneSecondAgo } from 'libs/date-converter.ts'
 import { MwRevision, MwRevisionMap } from 'types/mw-revision.ts'
 import { MwSiteInfo } from 'types/mw-site-info.ts'
-import { MwTitleMap } from 'types/mw-title.ts'
+import { MwTitle, MwTitleMap } from 'types/mw-title.ts'
 import { replaceHtmlTags, replaceInternalLinks } from './html-tag-replacer'
 
 export function sanitizeRevisionMap(
   revisionMap: MwRevisionMap,
+  title: MwTitle,
   titleMap: MwTitleMap,
   siteInfo: MwSiteInfo,
 ): MwRevisionMap {
-  revisionMap = fillMissingValuesInRevisionMap(revisionMap, siteInfo)
+  revisionMap = fillMissingValuesInRevisionMap(revisionMap, title, siteInfo)
   revisionMap = escapeSpecialCharactersInRevisionMap(revisionMap)
   revisionMap = removeHtmlTagsInRevisionMap(revisionMap, titleMap, siteInfo)
   return revisionMap
@@ -17,6 +18,7 @@ export function sanitizeRevisionMap(
 
 export function fillMissingValuesInRevisionMap(
   revisionMap: MwRevisionMap,
+  title: MwTitle,
   siteInfo: MwSiteInfo,
 ): MwRevisionMap {
   let latestTimestamp: string | null = null
@@ -28,7 +30,13 @@ export function fillMissingValuesInRevisionMap(
       revisionMap[revId]!.contributor = siteInfo.sitename + '의 Admin'
     }
     if (revisionMap[revId]!.text === undefined) {
-      revisionMap[revId]!.text = '(데이터 없음)'
+      if (title.originalId !== undefined) {
+        const sourceUrl = `http://ko.${siteInfo.dbname}.net/wp-d/${title.originalId}@${revId}/View`
+        const summary = `(데이터 없음, 원본: [${sourceUrl} ${sourceUrl}])`
+        revisionMap[revId]!.text = summary
+      } else {
+        revisionMap[revId]!.text = '(데이터 없음)'
+      }
     }
 
     if (latestTimestamp === null) {
@@ -61,10 +69,15 @@ export function appendComment(
   comment: string | undefined,
   revision: MwRevision,
 ): MwRevision {
-  if (revision.comment === undefined) {
-    revision.comment = '(편집 요약 데이터 없음)'
+  if (
+    (revision.comment === undefined &&
+      revision.contributor === undefined &&
+      revision.text === undefined) ||
+    comment === undefined
+  ) {
+    return revision
   }
-  revision.comment += comment
+  revision.comment = comment
   return revision
 }
 

@@ -51,6 +51,10 @@ export function applyCrawledHistory(
       titleMap[pageId] = {
         revisions: revisionMap,
       }
+      const originalId = WikidokUrlParser.pageId(crawled.url)
+      if (originalId !== null) {
+        titleMap[pageId]!.originalId = originalId
+      }
       const latestRevId = extractLatestRevId(crawled)
       if (latestRevId !== null) {
         titleMap[pageId]!.originalRevisionCount = latestRevId!
@@ -89,28 +93,30 @@ export function applyCrawledRevision(
     rev.text = decode(crawled.postContents)
   }
 
-  const titleIsShipped = titles[pageId] !== undefined
-  if (titleIsShipped) {
-    const revisionIsShipped =
-      revId !== null && titles[pageId]!.revisions[revId] !== undefined
-    if (revisionIsShipped) {
-      titles[pageId]!.revisions[revId]! = mergeRevisions(
-        titles[pageId]!.revisions[revId]!,
-        rev,
-      )
-    }
-  } else {
+  if (titles[pageId] === undefined) {
     titles[pageId] = {
       originalRevisionCount: 1,
       revisions: {},
     }
-    if (revId !== null) {
-      if (titles[pageId] !== undefined) {
-        titles[pageId]!.revisions[revId.toString()] = rev
-      }
-    } else {
-      titles[pageId]!.latestRevision = rev
-    }
+  }
+
+  if (revId === null && titles[pageId]!.latestRevision === undefined) {
+    // assume this is the latest revision
+    titles[pageId]!.latestRevision = rev
+  } else if (revId !== null && titles[pageId]!.revisions[revId] === undefined) {
+    titles[pageId]!.revisions[revId.toString()] = rev
+  }
+
+  if (revId === null) {
+    titles[pageId]!.latestRevision = mergeRevisions(
+      titles[pageId]!.latestRevision,
+      rev,
+    )
+  } else {
+    titles[pageId]!.revisions[revId]! = mergeRevisions(
+      titles[pageId]!.revisions[revId]!,
+      rev,
+    )
   }
 
   return titles
