@@ -38,9 +38,8 @@ export function replaceHtmlTags(html: string): string {
     }
     let refText
     try {
-      refText= decodeURIComponent(ref[1])
-    }
-    catch {
+      refText = decodeURIComponent(ref[1])
+    } catch {
       refText = ref[1]
     }
     html = html.replaceAll(ref[0], `<ref>${refText}</ref>`)

@@ -23,6 +23,9 @@ export function fillMissingValuesInRevisionMap(
   for (const revId of reversedIter(revisionMap)) {
     if (revisionMap[revId]!.contributor === undefined) {
       revisionMap[revId]!.contributor = siteInfo.sitename + '의 기여자'
+    } else if (revisionMap[revId]!.contributor! === 'admin') {
+      // @todo this is not filling
+      revisionMap[revId]!.contributor = siteInfo.sitename + '의 Admin'
     }
     if (revisionMap[revId]!.text === undefined) {
       revisionMap[revId]!.text = '(데이터 없음)'
