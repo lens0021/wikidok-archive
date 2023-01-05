@@ -21,7 +21,11 @@ export function fillMissingValuesInTitleMap(
   siteInfo: MwSiteInfo,
 ): MwTitleMap {
   for (const title in titleMap) {
-    titleMap[title] = fillMissingValuesInTitle(titleMap[title]!, siteInfo)
+    titleMap[title] = fillMissingValuesInTitle(
+      titleMap[title]!,
+      titleMap,
+      siteInfo,
+    )
   }
 
   return titleMap
@@ -29,6 +33,7 @@ export function fillMissingValuesInTitleMap(
 
 export function fillMissingValuesInTitle(
   title: MwTitle,
+  titleMap: MwTitleMap,
   siteInfo: MwSiteInfo,
 ): MwTitle {
   if (title.latestRevision && title.originalRevisionCount) {
@@ -43,7 +48,7 @@ export function fillMissingValuesInTitle(
   }
 
   title.revisions = fillMissingRevisions(title.revisions, siteInfo)
-  title.revisions = sanitizeRevisionMap(title.revisions, siteInfo)
+  title.revisions = sanitizeRevisionMap(title.revisions, titleMap, siteInfo)
 
   if (!title.latestRevision && title.originalRevisionCount) {
     title.latestRevision = title.revisions[String(title.originalRevisionCount)]!

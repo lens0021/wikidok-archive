@@ -1,14 +1,17 @@
 import { oneSecondAgo } from 'libs/date-converter.ts'
 import { MwRevision, MwRevisionMap } from 'types/mw-revision.ts'
 import { MwSiteInfo } from 'types/mw-site-info.ts'
+import { MwTitleMap } from 'types/mw-title.ts'
+import { replaceHtmlTags, replaceInternalLinks } from './html-tag-replacer'
 
 export function sanitizeRevisionMap(
   revisionMap: MwRevisionMap,
+  titleMap: MwTitleMap,
   siteInfo: MwSiteInfo,
 ): MwRevisionMap {
   revisionMap = fillMissingValuesInRevisionMap(revisionMap, siteInfo)
   revisionMap = escapeSpecialCharactersInRevisionMap(revisionMap)
-  revisionMap = removeHtmlTagsInRevisionMap(revisionMap)
+  revisionMap = removeHtmlTagsInRevisionMap(revisionMap, titleMap, siteInfo)
   return revisionMap
 }
 
@@ -115,57 +118,19 @@ export function escapeSpecialCharacters(str: string): string {
 
 export function removeHtmlTagsInRevisionMap(
   revisionMap: MwRevisionMap,
+  titleMap: MwTitleMap,
+  siteInfo: MwSiteInfo,
 ): MwRevisionMap {
   for (const revId in revisionMap) {
     if (revisionMap[revId]!.text === undefined) {
       continue
     }
+    revisionMap[revId]!.text = replaceInternalLinks(
+      revisionMap[revId]!.text!,
+      titleMap,
+      siteInfo,
+    )
     revisionMap[revId]!.text = replaceHtmlTags(revisionMap[revId]!.text!)
   }
   return revisionMap
-}
-
-/**
- *
- * @todo Replace internal links
- */
-export function replaceHtmlTags(html: string): string {
-  const replaceMap: { [key: string]: string } = {
-    '</?tbody>': '',
-
-    // classes
-    ' class="[^"]+"': '',
-
-    // data-mce
-    ' data-mce-style="[^"]+"': '',
-    ' data-mce-src="[^"]+"': '',
-    ' data-mce-href="[^"]+"': '',
-
-    // img
-    ' style="display: block; margin-left: auto; margin-right: auto;"': '',
-    'width="d+" height="d+"': '',
-
-    // external links
-    '<a href="(https?:[^"]+)" wk-external="true">(?:<span>)?([^<]+)(?:</span>)?</a>':
-      '[$1 $2]',
-  }
-
-  for (const replace in replaceMap) {
-    html = html.replaceAll(new RegExp(replace, 'g'), replaceMap[replace]!)
-  }
-
-  const refs = [
-    ...html.matchAll(
-      new RegExp('<button.+data-content="([^"]+)">\\d+</button>', 'g'),
-    ),
-  ]
-  for (const ref of refs) {
-    if (ref[1] === undefined) {
-      continue
-    }
-    const refText = decodeURIComponent(ref[1])
-    html = html.replaceAll(ref[0], `<ref>${refText}</ref>`)
-  }
-
-  return html
 }
