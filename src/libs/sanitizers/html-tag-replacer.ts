@@ -48,10 +48,6 @@ export function replaceHtmlTags(html: string): string {
   return html
 }
 
-/**
- *
- * @todo
- */
 export function replaceInternalLinks(
   html: string,
   titleMap: MwTitleMap,
