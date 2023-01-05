@@ -36,7 +36,13 @@ export function replaceHtmlTags(html: string): string {
     if (ref[1] === undefined) {
       continue
     }
-    const refText = decodeURIComponent(ref[1])
+    let refText
+    try {
+      refText= decodeURIComponent(ref[1])
+    }
+    catch {
+      refText = ref[1]
+    }
     html = html.replaceAll(ref[0], `<ref>${refText}</ref>`)
   }
 
